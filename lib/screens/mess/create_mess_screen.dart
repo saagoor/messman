@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mess/constants.dart';
 import 'package:mess/models/models.dart';
+import 'package:mess/services/auth_service.dart';
 import 'package:mess/services/helpers.dart';
 import 'package:mess/services/mess_service.dart';
 import 'package:mess/widgets/meal_size_controller.dart';
@@ -27,14 +28,22 @@ class _CreateMessScreenState extends State<CreateMessScreen> {
     setState(() {
       _isLoading = true;
     });
-    await Provider.of<MessService>(context, listen: false).createMess(_mess).then((value){
-      Navigator.of(context).pushReplacementNamed('/');
-    }).catchError((error){
+
+    try {
+      final messId = await Provider.of<MessService>(context, listen: false)
+          .createMess(_mess);
+      if (messId != null && messId > 0) {
+        Provider.of<AuthService>(context, listen: false).messId = messId;
+        return;
+      } else {
+        showHttpError(context, 'Received mess ID is invalid!');
+      }
+    } catch (error) {
       setState(() {
         _isLoading = false;
       });
       showHttpError(context, error);
-    });
+    }
   }
 
   @override
@@ -119,14 +128,14 @@ class _CreateMessScreenState extends State<CreateMessScreen> {
                   label: Text('Save Mess'),
                   color: Theme.of(context).primaryColor,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   padding: EdgeInsets.all(10),
                 ),
               ],
             ),
           ),
-          if(_isLoading)
-          ScreenLoading(),
+          if (_isLoading) ScreenLoading(),
         ],
       ),
     );

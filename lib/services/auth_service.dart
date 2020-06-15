@@ -92,7 +92,7 @@ class AuthService with ChangeNotifier {
         headers: httpHeader(_token),
         body: json.encode(authData),
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return _handleAuth(response);
       } else {
         return _handleErrors(response);

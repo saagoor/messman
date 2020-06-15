@@ -4,68 +4,41 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mess/constants.dart';
-import 'package:mess/models/daily_meal.dart';
 import 'package:mess/models/http_exception.dart';
-import 'package:http/http.dart' as http;
+import 'package:mess/models/meal.dart';
 import 'package:mess/services/helpers.dart';
+import 'package:http/http.dart' as http;
 
 class MealsService with ChangeNotifier {
   final String token;
   MealsService({
     this.token,
-    List<DailyMeal> prevItems,
+    this.monthsMeals,
   }) {
-    if (prevItems != null && prevItems.length > 0) {
-      this._dailyMeals = prevItems;
+    if (monthsMeals != null && monthsMeals.length > 0) {
+      this.monthsMeals = monthsMeals;
       isLoaded = true;
     }
   }
+
   bool isLoaded = false;
 
-  List<DailyMeal> _dailyMeals = [];
+  Map<DateTime, DaysMeal> monthsMeals = {};
 
-  List<DailyMeal> get meals {
-    return [..._dailyMeals];
+  List<MembersMeal> membersMeals(DateTime date) {
+    return monthsMeals[date].membersMeals;
   }
 
-  set meals(List<DailyMeal> newMeals) {
-    this._dailyMeals = newMeals;
-    isLoaded = true;
-    notifyListeners();
+  Map<String, Meal> messMeals(DateTime date) {
+    return monthsMeals[date].messMeals;
   }
 
-  List<DailyMeal> mealsOfYear(DateTime dateTime) {
-    return _dailyMeals
-        .where((item) => (item.date.year == dateTime.year))
-        .toList();
-  }
-
-  List<DailyMeal> mealsOfMonth(DateTime dateTime) {
-    return mealsOfYear(dateTime)
-        .where(
-          (item) => (item.date.month == dateTime.month),
-        )
-        .toList();
-  }
-
-  List<DailyMeal> mealsOfDay(DateTime dateTime) {
-    List<DailyMeal> daysMeals = mealsOfMonth(dateTime)
-        .where((item) => (item.date.day == dateTime.day))
-        .toList();
-    daysMeals.sort((a, b) => a.memberId.compareTo(b.memberId));
-    return daysMeals;
-  }
-
-  DailyMeal mealByUser(DateTime dateTime, int userId) {
-    return mealsOfDay(dateTime).firstWhere(
-      (item) => item.memberId == userId,
-      orElse: () => DailyMeal(
-        date: dateTime,
-        breakfast: true,
-        lunch: true,
-        dinner: true,
-      ),
-    );
+  List<MembersMeal> get membersMealsOfMonth {
+    List<MembersMeal> allMeals = [];
+    monthsMeals.forEach((key, value) {
+      allMeals.addAll(value.membersMeals);
+    });
+    return allMeals;
   }
 
   Future<void> fetchAndSetMeals() async {
@@ -77,11 +50,7 @@ class MealsService with ChangeNotifier {
       if (response.statusCode == 200) {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
-          List<DailyMeal> tempMeals = [];
-          result['data'].forEach((item) {
-            tempMeals.add(DailyMeal.fromJson(item));
-          });
-          meals = tempMeals;
+          print(result['data']);
         }
       } else {
         return handleHttpErrors(response);
@@ -95,12 +64,12 @@ class MealsService with ChangeNotifier {
 
   bool toggleWholeMessBreakfast(DateTime dateTime) {
     bool shouldOff = false;
-    mealsOfDay(dateTime).forEach((element) {
+    membersMeals(dateTime).forEach((element) {
       if (element.breakfast) {
         shouldOff = true;
       }
     });
-    mealsOfDay(dateTime).forEach((element) async {
+    membersMeals(dateTime).forEach((element) async {
       if ((shouldOff && element.breakfast) ||
           (!shouldOff && !element.breakfast)) {
         await element.toggleMeal('breakfast', token).catchError((_) {});
@@ -112,12 +81,12 @@ class MealsService with ChangeNotifier {
 
   bool toggleWholeMessLunch(DateTime dateTime) {
     bool shouldOff = false;
-    mealsOfDay(dateTime).forEach((element) {
+    membersMeals(dateTime).forEach((element) {
       if (element.lunch) {
         shouldOff = true;
       }
     });
-    mealsOfDay(dateTime).forEach((element) async {
+    membersMeals(dateTime).forEach((element) async {
       if ((shouldOff && element.lunch) || (!shouldOff && !element.lunch)) {
         await element.toggleMeal('lunch', token).catchError((_) {});
       }
@@ -128,15 +97,14 @@ class MealsService with ChangeNotifier {
 
   bool toggleWholeMessDinner(DateTime dateTime) {
     bool shouldOff = false;
-    mealsOfDay(dateTime).forEach((element) {
+    membersMeals(dateTime).forEach((element) {
       if (element.dinner) {
         shouldOff = true;
       }
     });
-    mealsOfDay(dateTime).forEach((element) async {
+    membersMeals(dateTime).forEach((element) async {
       if ((shouldOff && element.dinner) || (!shouldOff && !element.dinner)) {
         await element.toggleMeal('dinner', token).catchError((_) {});
-        print(element.toJson());
       }
     });
     notifyListeners();
@@ -144,7 +112,10 @@ class MealsService with ChangeNotifier {
   }
 
   Future<void> addGuestMeal(
-      DateTime date, int memberId, double guestCount) async {
+    DateTime date,
+    int memberId,
+    double guestCount,
+  ) async {
     try {
       final response = await http.post(
         baseUrl + 'meals/guests',
@@ -159,7 +130,7 @@ class MealsService with ChangeNotifier {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
           result['data'].forEach((item) {
-            _dailyMeals.add(DailyMeal.fromJson(item));
+            monthsMeals[date].membersMeals.add(MembersMeal.fromJson(item));
           });
           notifyListeners();
         } else {
@@ -173,4 +144,5 @@ class MealsService with ChangeNotifier {
     }
   }
 
+  Future<void> setMenu(dateTime, String type, int foodId) async {}
 }

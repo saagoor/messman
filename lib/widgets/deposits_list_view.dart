@@ -37,6 +37,7 @@ class DepositsListCard extends StatelessWidget {
     final User member =
         Provider.of<MembersService>(context).memberById(deposit.memberId);
     return Card(
+      elevation: 2,
       child: Dismissible(
         key: Key('${deposit.id ?? 0}'),
         child: ListTile(

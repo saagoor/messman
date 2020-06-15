@@ -7,11 +7,49 @@ import 'package:mess/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:mess/models/http_exception.dart';
 import 'package:mess/services/helpers.dart';
+import 'package:mess/models/food.dart';
 
-part 'daily_meal.g.dart';
+part 'meal.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+
+class Meal with ChangeNotifier {
+  int id;
+  int messId;
+  Food food;
+  DateTime date;
+  String type;
+  int likes;
+  int dislikes;
+  bool likedByUser;
+
+  Meal({
+    this.id,
+    this.messId,
+    this.food,
+    this.date,
+    this.type,
+    this.likes,
+    this.dislikes,
+  });
+
+  factory Meal.fromJson(Map<String, dynamic> json) => _$MealFromJson(json);
+  Map<String, dynamic> toJson() => _$MealToJson(this);
+
+  void like(){
+
+  }
+
+  void dislike(){
+
+  }
+  
+}
+
+
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-class DailyMeal with ChangeNotifier {
+class MembersMeal with ChangeNotifier {
   int id;
   int memberId;
   int messId;
@@ -20,7 +58,8 @@ class DailyMeal with ChangeNotifier {
   bool lunch;
   bool dinner;
 
-  DailyMeal({
+  MembersMeal({
+    this.id,
     this.memberId,
     this.messId,
     this.date,
@@ -29,9 +68,9 @@ class DailyMeal with ChangeNotifier {
     this.dinner,
   });
 
-  factory DailyMeal.fromJson(Map<String, dynamic> json) =>
-      _$DailyMealFromJson(json);
-  Map<String, dynamic> toJson() => _$DailyMealToJson(this);
+  factory MembersMeal.fromJson(Map<String, dynamic> json) =>
+      _$MembersMealFromJson(json);
+  Map<String, dynamic> toJson() => _$MembersMealToJson(this);
 
   Future<void> toggleMeal(String mealType, String token) async {
     try {
@@ -54,7 +93,7 @@ class DailyMeal with ChangeNotifier {
         }
         notifyListeners();
       } else {
-        handleHttpErrors(response);
+        return handleHttpErrors(response);
       }
     } on SocketException catch (_) {
       throw HttpException('Could not connect to the server!');
@@ -62,4 +101,18 @@ class DailyMeal with ChangeNotifier {
       throw error;
     }
   }
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+class DaysMeal{
+  final List<MembersMeal> membersMeals;
+  final Map<String, Meal> messMeals;
+  DaysMeal({
+    this.messMeals,
+    this.membersMeals,
+  });
+
+  factory DaysMeal.fromJson(Map<String, dynamic> json) =>
+      _$DaysMealFromJson(json);
+  Map<String, dynamic> toJson() => _$DaysMealToJson(this);
 }

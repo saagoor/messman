@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mess/screens/mess/create_mess_screen.dart';
+import 'package:mess/services/auth_service.dart';
 import 'package:mess/services/helpers.dart';
 import 'package:mess/services/mess_service.dart';
 import 'package:mess/widgets/screen_loading.dart';
@@ -27,12 +28,20 @@ class _JoinMessScreenState extends State<JoinMessScreen> {
     setState(() {
       _isLoading = true;
     });
-    await _messService.joinMess(joinCode).catchError((error) {
-      showHttpError(context, error);
+    try {
+      final int messId = await _messService.joinMess(joinCode);
+      if(messId != null && messId > 0){
+        Provider.of<AuthService>(context, listen: false).messId = messId;
+        return;
+      }else{
+        showHttpError(context, 'Received mess ID is invalid!');
+      }
+    } catch (error) {
       setState(() {
         _isLoading = false;
       });
-    });
+      showHttpError(context, error);
+    }
   }
 
   @override

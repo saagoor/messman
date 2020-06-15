@@ -11,7 +11,6 @@ class DepositsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final depositsService = Provider.of<DepositsService>(context);
-    print('building deposits');
     return Scaffold(
       appBar: AppBar(
         title: Text('Deposits'),

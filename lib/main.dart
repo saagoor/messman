@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mess/models/meal.dart';
 import 'package:mess/screens/add_deposit_screen.dart';
 import 'package:mess/screens/add_expense_screen.dart';
 import 'package:mess/screens/auth/forgot_password_screen.dart';
@@ -19,7 +20,7 @@ import 'package:mess/screens/wrapper.dart';
 import 'package:mess/services/auth_service.dart';
 import 'package:mess/services/deposits_service.dart';
 import 'package:mess/services/expenses_service.dart';
-import 'package:mess/services/food_service.dart';
+import 'package:mess/services/foods_service.dart';
 import 'package:mess/services/meals_service.dart';
 import 'package:mess/services/members_service.dart';
 import 'package:mess/services/mess_service.dart';
@@ -63,8 +64,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider2<AuthService, MessService, MealsService>(
           create: (ctx) => MealsService(),
           update: (ctx, auth, messData, prev){
-            final prevItems = prev.isLoaded || prev.meals.length > 0 ? prev.meals : messData.dailyMeals;
-            return MealsService(token: auth.token, prevItems: prevItems);
+            final Map<DateTime, DaysMeal> prevItems = prev.isLoaded ? prev.monthsMeals : messData.monthsMeals;
+            return MealsService(token: auth.token, monthsMeals: prevItems);
           },
         ),
         ChangeNotifierProxyProvider2<AuthService, MessService, DepositsService>(
@@ -74,7 +75,7 @@ class MyApp extends StatelessWidget {
             return DepositsService(token: auth.token, prevItems: prevItems);
           },
         ),
-        ChangeNotifierProvider.value(value: DailyFoodsService()),
+        ChangeNotifierProvider.value(value: FoodsService()),
         ChangeNotifierProvider.value(value: SettingsService()),
       ],
       child: MessApp(),

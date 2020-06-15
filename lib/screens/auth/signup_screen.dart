@@ -55,7 +55,7 @@ class _SigninScreenState extends State<SignupScreen> {
     _form.currentState.save();
     try {
       await _auth.signUp(_authData);
-      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacementNamed('/');
     } on HttpException catch (error) {
       _showError(error.toString());
     } catch (error) {

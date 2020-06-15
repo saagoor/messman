@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mess/widgets/users_currency.dart';
@@ -12,8 +11,11 @@ class Amount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amountStr =
-        (amount == null || amount == 0 || amount.isNaN) ? '0' : amount.floor();
+
+    final String roundedAmount = (amount == null || amount == 0 || amount.isNaN) ? '0.0' : amount.toStringAsFixed(2);
+    final String amountStr = roundedAmount.split('.')[0];
+    final String amountFraction = amount.truncateToDouble() == amount ? '' : '.'+roundedAmount.split('.')[1];
+
     return FittedBox(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,9 +29,9 @@ class Amount extends StatelessWidget {
               color: amount < 0 ? Theme.of(context).errorColor : null,
             ),
           ),
-          if (amount.truncateToDouble() != amount)
+          if (amountFraction.isNotEmpty)
             Text(
-              '.${((amount % 1) * pow(10, 2)).round()}',
+              amountFraction,
               style: TextStyle(
                 fontWeight: fontWeight,
                 fontSize: fontSize != null ? fontSize - 4 : 10,

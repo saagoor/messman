@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mess/services/food_service.dart';
+import 'package:mess/models/food.dart';
+import 'package:mess/services/foods_service.dart';
 import 'package:provider/provider.dart';
 
 class FoodSearchResult extends StatelessWidget {

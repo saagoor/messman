@@ -16,7 +16,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
 
   Future<void> _loadExpenses() async {
     return expensesService.fetchAndSet().catchError((error) {
-      return showHttpError(context, error);
+      showHttpError(context, error);
     });
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mess/models/meal.dart';
 import 'package:mess/screens/meals/set_meal_screen.dart';
-import 'package:mess/services/food_service.dart';
+import 'package:mess/services/meals_service.dart';
 import 'package:provider/provider.dart';
 
 class TodaysMeals extends StatelessWidget {
@@ -11,50 +12,34 @@ class TodaysMeals extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dailyFoods = Provider.of<DailyFoodsService>(context);
-
+    final mealsService = Provider.of<MealsService>(context);
+    final mealsOfDay = mealsService.messMeals(DateTime.now());
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: <Widget>[
-          MealCard(
-            title: 'Breakfast',
-            meal: dailyFoods.breakfast,
-            imageName: 'breakfast.png',
+        children: mealsOfDay.values.map((item) => Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            MealCard(
+              meal: item,
             alwaysShowSetBtn: alwaysShowSetBtn,
           ),
           SizedBox(width: 10),
-          MealCard(
-            title: 'Lunch',
-            meal: dailyFoods.lunch,
-            imageName: 'lunch.png',
-            alwaysShowSetBtn: alwaysShowSetBtn,
-          ),
-          SizedBox(width: 10),
-          MealCard(
-            title: 'Dinner',
-            meal: dailyFoods.dinner,
-            imageName: 'dinner.png',
-            alwaysShowSetBtn: alwaysShowSetBtn,
-          ),
-        ],
+          ],
+        )).toList(),
       ),
     );
   }
 }
 
 class MealCard extends StatelessWidget {
-  final String title;
-  final String meal;
-  final String imageName;
+  final Meal meal;
   final bool alwaysShowSetBtn;
 
   const MealCard({
     Key key,
-    @required this.title,
     @required this.meal,
-    @required this.imageName,
     this.alwaysShowSetBtn = false,
   }) : super(key: key);
 
@@ -74,9 +59,9 @@ class MealCard extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     children: <Widget>[
-                      Image.asset('assets/images/$imageName', height: 30),
+                      Image.asset('assets/images/${meal.type}.png', height: 30),
                       SizedBox(height: 8),
-                      Text(title),
+                      Text(meal.type.toUpperCase()),
                       SizedBox(height: 4),
                       if(alwaysShowSetBtn || meal != null)
                       Text(
@@ -86,24 +71,24 @@ class MealCard extends StatelessWidget {
                                 ? Theme.of(context).primaryColor
                                 : Theme.of(context).errorColor),
                       ),
-                      if (alwaysShowSetBtn || meal == null || meal.isEmpty) ...[
+                      if (alwaysShowSetBtn || meal == null || meal.food == null) ...[
                         SizedBox(height: 10),
                         SizedBox(
                           height: 25,
                           child: OutlineButton(
                             onPressed: () async {
-                              String foodTitle =
+                              int foodId =
                                   await Navigator.of(context).pushNamed(
                                 SetMealScreen.routeName,
-                                arguments: title,
-                              ) as String;
+                                arguments: meal?.food?.title ?? '',
+                              ) as int;
                               final DateTime dateTime =
                                   Provider.of<DateTime>(context, listen: false);
-                              Provider.of<DailyFoodsService>(context,
+                              Provider.of<MealsService>(context,
                                       listen: false)
-                                  .setMenu(dateTime, title, foodTitle);
+                                  .setMenu(dateTime, meal?.type, foodId);
                             },
-                            child: Text('Set $title',
+                            child: Text('Set ${meal?.type ?? ''}',
                                 style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColorDark)),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
@@ -122,8 +107,8 @@ class MealCard extends StatelessWidget {
         ),
         Positioned(
           bottom: 0,
-          child: Consumer<DailyFoodsService>(
-            builder: (ctx, dailyFoods, child) => Row(
+          child: Consumer<Meal>(
+            builder: (ctx, mealAlt, child) => Row(
               children: <Widget>[
                 Card(
                   shape: RoundedRectangleBorder(
@@ -131,12 +116,11 @@ class MealCard extends StatelessWidget {
                   child: IconButton(
                     icon: Icon(Icons.thumb_down),
                     onPressed: () {
-                      dailyFoods.setReact(
-                          title, dailyFoods.react(title) == -1 ? 0 : -1);
+                      mealAlt.dislike();
                     },
                     iconSize: 15,
                     visualDensity: VisualDensity.compact,
-                    color: dailyFoods.react(title) == -1
+                    color: !mealAlt.likedByUser
                         ? Theme.of(context).primaryColor
                         : Colors.grey,
                   ),
@@ -147,12 +131,11 @@ class MealCard extends StatelessWidget {
                   child: IconButton(
                     icon: Icon(Icons.thumb_up),
                     onPressed: () {
-                      dailyFoods.setReact(
-                          title, dailyFoods.react(title) == 1 ? 0 : 1);
+                      mealAlt.like();
                     },
                     iconSize: 15,
                     visualDensity: VisualDensity.compact,
-                    color: dailyFoods.react(title) == 1
+                    color: mealAlt.likedByUser
                         ? Theme.of(context).primaryColor
                         : Colors.grey,
                   ),

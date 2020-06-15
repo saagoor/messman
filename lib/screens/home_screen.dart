@@ -19,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _isInit = false;
+  bool _isLoading = false;
   int _currentIndex = 0;
 
   void _onAppStart() {
@@ -67,11 +68,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _loadMessData() {
+  void _loadMessData() async {
     final messService = Provider.of<MessService>(context);
     if (!messService.isLoaded) {
-      messService.fetchAndSet().catchError((error) {
+      _isLoading = true;
+      await messService.fetchAndSet().catchError((error) {
         showHttpError(context, error);
+      });
+      setState(() {
+        _isLoading = false;
       });
     }
   }
@@ -102,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: _theView(),
+      body: _isLoading ? Center(child: CircularProgressIndicator()) : _theView(),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: [

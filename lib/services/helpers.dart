@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:mess/models/daily_meal.dart';
 import 'package:mess/models/http_exception.dart';
+import 'package:mess/models/meal.dart';
 import 'package:mess/models/models.dart';
 import 'package:http/http.dart' as http;
 import 'package:mess/services/auth_service.dart';
@@ -12,7 +12,7 @@ int lastDayOfMonth(DateTime dateTime) {
   return DateTime(now.year, now.month + 1, 0).day;
 }
 
-bool canOnOffMeal(User member, DailyMeal meal) {
+bool canOnOffMeal(User member, MembersMeal meal) {
   if (member == null || meal == null) {
     return false;
   }
@@ -76,7 +76,7 @@ void showHttpSnackbarError(BuildContext context, error) {
   }
 }
 
-void handleHttpErrors(http.Response response, {Function logoutCallback}) async {
+Future<void> handleHttpErrors(http.Response response, {Function logoutCallback}) async {
   final Map<String, dynamic> result = json.decode(response.body);
   if(response.statusCode == 404){
     throw HttpException('Error: 404! Unknown action.');

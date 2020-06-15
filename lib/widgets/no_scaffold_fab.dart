@@ -18,6 +18,7 @@ class NoScaffoldFAB extends StatelessWidget {
       height: 50,
       width: 50,
       child: FloatingActionButton(
+        heroTag: key,
         onPressed: onPressed,
         child: child,
       ),

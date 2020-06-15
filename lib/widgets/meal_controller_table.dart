@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mess/models/daily_meal.dart';
+import 'package:mess/models/meal.dart';
 import 'package:mess/services/auth_service.dart';
 import 'package:mess/services/helpers.dart';
 import 'package:mess/services/meals_service.dart';
@@ -26,7 +26,7 @@ class _MealControllerTableState extends State<MealControllerTable> {
 
   void initMealsControll() {
     // Whole mess specific meal on off check
-    for (DailyMeal element in _mealsData.mealsOfDay(widget.dateTime)) {
+    for (MembersMeal element in _mealsData.membersMeals(widget.dateTime)) {
       if (element.breakfast) _breakfastOn = true;
       if (element.lunch) _lunchOn = true;
       if (element.dinner) _dinnerOn = true;
@@ -101,11 +101,11 @@ class _MealControllerTableState extends State<MealControllerTable> {
             ),
           ],
         ),
-        ..._mealsData.mealsOfDay(widget.dateTime).map((theMeal) {
-          final i = _mealsData.mealsOfDay(widget.dateTime).indexOf(theMeal);
+        ..._mealsData.membersMeals(widget.dateTime).map((theMeal) {
+          final i = _mealsData.membersMeals(widget.dateTime).indexOf(theMeal);
           final prevMember = i > 0
               ? _membersData.memberById(
-                  _mealsData.mealsOfDay(widget.dateTime)[i - 1].memberId)
+                  _mealsData.membersMeals(widget.dateTime)[i - 1].memberId)
               : null;
           return _getRow(theMeal, prevMember?.id == theMeal.memberId);
         }).toList(),
@@ -113,26 +113,26 @@ class _MealControllerTableState extends State<MealControllerTable> {
     );
   }
 
-  _getRow(DailyMeal meal, bool isGuest) {
+  _getRow(MembersMeal meal, bool isGuest) {
     final member = _membersData.memberById(meal.memberId);
     return TableRow(
       children: [
         Text(member.name + (isGuest ? '\'s Guest' : '')),
-        ChangeNotifierProvider<DailyMeal>.value(
+        ChangeNotifierProvider<MembersMeal>.value(
           value: meal,
-          child: Consumer<DailyMeal>(
+          child: Consumer<MembersMeal>(
             builder: (ctx, meal, child) => MealsCheckbox(meal, 'breakfast'),
           ),
         ),
-        ChangeNotifierProvider<DailyMeal>.value(
+        ChangeNotifierProvider<MembersMeal>.value(
           value: meal,
-          child: Consumer<DailyMeal>(
+          child: Consumer<MembersMeal>(
             builder: (ctx, meal, child) => MealsCheckbox(meal, 'lunch'),
           ),
         ),
-        ChangeNotifierProvider<DailyMeal>.value(
+        ChangeNotifierProvider<MembersMeal>.value(
           value: meal,
-          child: Consumer<DailyMeal>(
+          child: Consumer<MembersMeal>(
             builder: (ctx, meal, child) => MealsCheckbox(meal, 'dinner'),
           ),
         ),
@@ -142,7 +142,7 @@ class _MealControllerTableState extends State<MealControllerTable> {
 }
 
 class MealsCheckbox extends StatefulWidget {
-  final DailyMeal meal;
+  final MembersMeal meal;
   final String type;
   MealsCheckbox(this.meal, this.type);
   @override

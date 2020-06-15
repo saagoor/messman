@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:mess/constants.dart';
-import 'package:mess/models/daily_meal.dart';
 import 'package:mess/models/http_exception.dart';
+import 'package:mess/models/meal.dart';
 import 'package:mess/models/models.dart';
 import 'package:mess/models/task.dart';
 import 'package:mess/services/auth_service.dart';
@@ -25,7 +25,7 @@ class MessService with ChangeNotifier {
   List<Expense> expenses = [];
   List<Task> tasks = [];
   List<User> members = [];
-  List<DailyMeal> dailyMeals = [];
+  Map<DateTime, DaysMeal> monthsMeals = {};
   List<Deposit> deposits = [];
 
   Future<void> fetchAndSet() async {
@@ -41,11 +41,11 @@ class MessService with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final result = json.decode(response.body) as Map<String, dynamic>;
-        if (result != null || result['data'] != null){
+        if (result != null || result['data'] != null) {
           setAllData(result['data']);
           isLoaded = true;
           notifyListeners();
-        }else{
+        } else {
           throw HttpException('Empty data received!');
         }
       } else {
@@ -91,12 +91,12 @@ class MessService with ChangeNotifier {
     }
 
     // Setting daily meals data
-    if (data['daily_meals'] != null) {
-      List<DailyMeal> tempDailyMeals = [];
-      data['daily_meals'].forEach((item) {
-        if (item != null) tempDailyMeals.add(DailyMeal.fromJson(item));
-      });
-      dailyMeals = tempDailyMeals;
+    if (data['meals'] != null) {
+      // List<MembersMeal> tempMembersMeals = [];
+      // data['meals'].forEach((item) {
+      //   if (item != null) tempMembersMeals.add(MembersMeal.fromJson(item));
+      // });
+      // MembersMeals = tempMembersMeals;
     }
 
     // Setting depositsdata
@@ -109,7 +109,7 @@ class MessService with ChangeNotifier {
     }
   }
 
-  Future<void> joinMess(String joinCode) async {
+  Future<int> joinMess(String joinCode) async {
     try {
       final response = await http.post(
         baseUrl + 'mess/join',
@@ -120,20 +120,24 @@ class MessService with ChangeNotifier {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
           setAllData(result['data']);
-          auth.messId = _mess.id;
-          notifyListeners();
+          return _mess?.id;
         } else {
           throw HttpException('Could not join mess!');
         }
       } else {
-        return handleHttpErrors(response);
+        try{
+          await handleHttpErrors(response);
+        }catch(error){
+          throw error;
+        }
       }
+      return null;
     } catch (error) {
       throw error;
     }
   }
 
-  Future<void> createMess(Mess mess) async {
+  Future<int> createMess(Mess mess) async {
     try {
       final response = await http.post(
         baseUrl + 'mess',
@@ -144,14 +148,16 @@ class MessService with ChangeNotifier {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
           _mess = Mess.fromJson(result['data']);
-          if (_mess != null) {
-            auth.messId = _mess.id;
-            notifyListeners();
-          }
+          return _mess?.id;
         }
       } else {
-        return handleHttpErrors(response);
+        try{
+          await handleHttpErrors(response);
+        }catch(error){
+          throw error;
+        }
       }
+      return null;
     } catch (error) {
       throw error;
     }
