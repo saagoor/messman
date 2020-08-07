@@ -1,34 +1,60 @@
+import 'dart:convert';
+
 import 'package:flutter/widgets.dart';
+import 'package:mess/constants.dart';
 import 'package:mess/models/food.dart';
 
+import 'package:http/http.dart' as http;
+import 'package:mess/models/http_exception.dart';
+import 'package:mess/services/helpers.dart';
 
 class FoodsService with ChangeNotifier {
-  List<Food> _items = [
-    Food(
-      id: 1,
-      title: 'Beef',
-      imageUrl:
-          'https://www.edamam.com/food-img/bab/bab88ab3ea40d34e4c8ae35d6b30344a.jpg',
-      category: 'Generic foods',
-    ),
-    Food(
-      id: 2,
-      title: 'Chicken',
-      imageUrl:
-          'https://www.edamam.com/food-img/bab/bab88ab3ea40d34e4c8ae35d6b30344a.jpg',
-      category: 'Generic foods',
-    ),
-  ];
-
+  final String token;
+  final List<Food> prevItems;
+  FoodsService({this.token, this.prevItems}) {
+    if (prevItems != null && prevItems.length > 0) {
+      _items = prevItems;
+      isLoaded = true;
+    }
+  }
+  List<Food> _items = [];
   List<Food> get items {
     return [..._items];
   }
 
   List<Food> search(String queryString) {
-    return _items.where((item) => item.title.contains(queryString)).toList();
+    return _items
+        .where((item) =>
+            item.title.toLowerCase().contains(queryString.toLowerCase()))
+        .toList();
   }
 
-  
+  bool isLoaded = false;
+
+  Future<void> fetchAndSet() async {
+    isLoaded = true;
+    try {
+      final response = await http.get(
+        baseUrl + 'foods',
+        headers: httpHeader(token),
+      );
+      if (response.statusCode == 200) {
+        final result = json.decode(response.body) as Map<String, dynamic>;
+        if (result != null && result['data'] != null) {
+          List<Food> tempFoods = [];
+          result['data'].forEach((item) {
+            tempFoods.add(Food.fromJson(item));
+          });
+          _items = tempFoods;
+          notifyListeners();
+        } else {
+          throw HttpException('No food has been stored on the server!');
+        }
+      } else {
+        return handleHttpErrors(response);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 }
-
-

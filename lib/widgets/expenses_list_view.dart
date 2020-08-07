@@ -5,27 +5,19 @@ import 'package:mess/services/expenses_service.dart';
 import 'package:mess/services/helpers.dart';
 import 'package:mess/services/members_service.dart';
 import 'package:mess/widgets/amount.dart';
+import 'package:mess/widgets/list_view_empty.dart';
 import 'package:provider/provider.dart';
 
 
 class ExpensesListView extends StatelessWidget {
   final List<Expense> expenses;
-  final double noItemHeight;
-  ExpensesListView(this.expenses, {this.noItemHeight});
+  final double reduceSize;
+  ExpensesListView(this.expenses, {this.reduceSize = 0});
 
   @override
   Widget build(BuildContext context) {
     if (expenses.length <= 0) {
-      return SingleChildScrollView(
-        child: Container(
-          constraints: BoxConstraints.expand(
-            height: noItemHeight ?? MediaQuery.of(context).size.height - kBottomNavigationBarHeight - 50,
-          ),
-          child: Center(
-            child: Text('No expense found!'),
-          ),
-        ),
-      );
+      return ListViewEmpty(text: 'No expense found!', reduceSize: reduceSize,);
     }
 
     return ListView.builder(

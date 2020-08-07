@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mess/services/auth_service.dart';
 import 'package:mess/services/members_service.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +20,7 @@ class MemberSelector extends StatelessWidget {
         labelText: labelText ?? 'Member',
         prefixIcon: Icon(Icons.person_outline),
       ),
-      value: initialId,
+      value: initialId ?? Provider.of<AuthService>(context).user?.id,
       items: membersService.items
           .map((member) => DropdownMenuItem<int>(
                 child: Row(

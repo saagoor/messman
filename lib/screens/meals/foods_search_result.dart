@@ -7,10 +7,11 @@ class FoodSearchResult extends StatelessWidget {
   final String queryString;
 
   FoodSearchResult(this.queryString);
-  final FoodsService foodsService = FoodsService();
 
   @override
   Widget build(BuildContext context) {
+    final foodsService = Provider.of<FoodsService>(context);
+
     if (queryString != null && queryString.isNotEmpty) {
       final searchResult = foodsService.search(queryString);
       if (searchResult == null || searchResult.length <= 0) {
@@ -45,33 +46,30 @@ class FoodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DateTime>(
-      builder: (ctx, dateTime, child) => ListTile(
-        leading: SizedBox(
-          height: 60,
-          width: 60,
-          child: CircleAvatar(
-            backgroundImage: NetworkImage(food.imageUrl),
-            onBackgroundImageError: (wtf, trace){
-              print('Image error');
-              print(trace);
-              print(wtf);
-              return AssetImage('assets/images/lunch.png');
-            },
-          ),
+    return ListTile(
+      leading: SizedBox(
+        height: 60,
+        width: 60,
+        child: CircleAvatar(
+          backgroundImage: food.imageUrl != null ? NetworkImage(food.imageUrl) : AssetImage('assets/images/lunch.png'),
+          onBackgroundImageError: (wtf, trace) {
+            print('Image error');
+            return AssetImage('assets/images/lunch.png');
+          },
         ),
-        title: Text(food.title, style: Theme.of(context).textTheme.headline6),
-        subtitle: Text(food.category ?? 'Unspecified'),
-        trailing: Card(
-          elevation: 0,
-          shape: CircleBorder(
-              side: BorderSide(color: Theme.of(context).buttonColor)),
-          child: IconButton(
-            icon: Icon(Icons.check),
-            onPressed: () {
-              Navigator.of(context).pop(food.title);
-            },
-          ),
+      ),
+      title: Text(food.title, style: Theme.of(context).textTheme.headline6),
+      subtitle: Text(food.category ?? 'Unspecified'),
+      trailing: Card(
+        elevation: 0,
+        shape: CircleBorder(
+          side: BorderSide(color: Theme.of(context).buttonColor),
+        ),
+        child: IconButton(
+          icon: Icon(Icons.check),
+          onPressed: () {
+            Navigator.of(context).pop(food);
+          },
         ),
       ),
     );

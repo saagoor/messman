@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mess/screens/chat/chat_screen.dart';
 import 'package:mess/screens/close_month_screen.dart';
 import 'package:mess/screens/meals/meals_screen.dart';
 import 'package:mess/screens/tabs/expenses_tab.dart';
@@ -102,7 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Image.asset(
               'assets/images/chat.png',
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(ChatScreen.routeName);
+            },
           )
         ],
       ),
@@ -121,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.group_work),
-            title: Text('Tasks'),
+            title: Text('Tasks & Bazar..'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.restaurant),
@@ -149,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 1:
         return 'Mess Expenses';
       case 2:
-        return 'Tasks';
+        return 'Tasks & Bazar Dates';
       default:
         return Provider.of<MessService>(context, listen: false).mess?.name ??
             'MessMan';

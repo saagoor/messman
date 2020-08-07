@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:mess/widgets/users_currency.dart';
+import 'package:mess/widgets/user/users_currency.dart';
 
 class Amount extends StatelessWidget {
   final double amount;

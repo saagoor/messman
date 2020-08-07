@@ -102,22 +102,23 @@ class _MealControllerTableState extends State<MealControllerTable> {
           ],
         ),
         ..._mealsData.membersMeals(widget.dateTime).map((theMeal) {
-          final i = _mealsData.membersMeals(widget.dateTime).indexOf(theMeal);
-          final prevMember = i > 0
-              ? _membersData.memberById(
-                  _mealsData.membersMeals(widget.dateTime)[i - 1].memberId)
-              : null;
-          return _getRow(theMeal, prevMember?.id == theMeal.memberId);
+          return _getRow(theMeal);
         }).toList(),
       ],
     );
   }
 
-  _getRow(MembersMeal meal, bool isGuest) {
+  _getRow(MembersMeal meal) {
     final member = _membersData.memberById(meal.memberId);
+    int guestNo = 0;
+    _mealsData.membersMeals(widget.dateTime).forEach((element) {
+      if (element.id < meal.id && element.memberId == meal.memberId) {
+        guestNo++;
+      }
+    });
     return TableRow(
       children: [
-        Text(member.name + (isGuest ? '\'s Guest' : '')),
+        Text(member.name + (guestNo > 0 ? '\'s Guest $guestNo' : '')),
         ChangeNotifierProvider<MembersMeal>.value(
           value: meal,
           child: Consumer<MembersMeal>(

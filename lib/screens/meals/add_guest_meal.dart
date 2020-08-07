@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mess/services/auth_service.dart';
 import 'package:mess/services/helpers.dart';
 import 'package:mess/services/meals_service.dart';
-import 'package:mess/widgets/meal_size_controller.dart';
-import 'package:mess/widgets/member_selector.dart';
+import 'package:mess/widgets/meal/meal_size_controller.dart';
 import 'package:mess/widgets/screen_loading.dart';
+import 'package:mess/widgets/user/member_selector.dart';
 import 'package:provider/provider.dart';
 
 class AddGuestMeal extends StatefulWidget {
@@ -26,8 +27,9 @@ class _AddGuestMealState extends State<AddGuestMeal> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthService>(context);
-    _memberId = auth.user.id;
+    print(widget.date);
+    final auth = Provider.of<AuthService>(context, listen: false);
+    _memberId = auth.user?.id;
 
     return Stack(
       children: <Widget>[
@@ -36,9 +38,11 @@ class _AddGuestMealState extends State<AddGuestMeal> {
           child: Column(
             children: <Widget>[
               Text(
-                'Add Extra Meal',
+                'Add Guest Meal',
                 style: TextStyle(fontSize: 20),
               ),
+              SizedBox(height: 10),
+              Text(DateFormat.yMMMMEEEEd().format(widget.date)),
               SizedBox(height: 30),
               MemberSelector(
                 initialId: _memberId,

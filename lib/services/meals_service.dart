@@ -13,7 +13,7 @@ class MealsService with ChangeNotifier {
   final String token;
   MealsService({
     this.token,
-    this.monthsMeals,
+    monthsMeals,
   }) {
     if (monthsMeals != null && monthsMeals.length > 0) {
       this.monthsMeals = monthsMeals;
@@ -23,14 +23,29 @@ class MealsService with ChangeNotifier {
 
   bool isLoaded = false;
 
-  Map<DateTime, DaysMeal> monthsMeals = {};
+  Map<String, DaysMeal> monthsMeals = {};
 
   List<MembersMeal> membersMeals(DateTime date) {
-    return monthsMeals[date].membersMeals;
+    return monthsMeals[DateFormat('yyyy-MM-dd').format(date)]?.membersMeals ??
+        [];
   }
 
-  Map<String, Meal> messMeals(DateTime date) {
-    return monthsMeals[date].messMeals;
+  Meal breakfast(DateTime date) {
+    if (date == null) date = DateTime.now();
+    return monthsMeals[DateFormat('yyyy-MM-dd').format(date)]?.breakfast ??
+        Meal(type: 'breakfast', date: date);
+  }
+
+  Meal lunch(DateTime date) {
+    if (date == null) date = DateTime.now();
+    return monthsMeals[DateFormat('yyyy-MM-dd').format(date)]?.lunch ??
+        Meal(type: 'lunch', date: date);
+  }
+
+  Meal dinner(DateTime date) {
+    if (date == null) date = DateTime.now();
+    return monthsMeals[DateFormat('yyyy-MM-dd').format(date)]?.dinner ??
+        Meal(type: 'dinner', date: date);
   }
 
   List<MembersMeal> get membersMealsOfMonth {
@@ -50,7 +65,12 @@ class MealsService with ChangeNotifier {
       if (response.statusCode == 200) {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
-          print(result['data']);
+          Map<String, DaysMeal> tempMeals = {};
+          result['data'].forEach((i, val) {
+            tempMeals.putIfAbsent(i, () => DaysMeal.fromJson(val));
+          });
+          monthsMeals = tempMeals;
+          notifyListeners();
         }
       } else {
         return handleHttpErrors(response);
@@ -58,6 +78,7 @@ class MealsService with ChangeNotifier {
     } on SocketException catch (_) {
       throw HttpException('Could not connect to the server!');
     } catch (error) {
+      print(error);
       throw HttpException('Something went wrong, could not load meals!');
     }
   }
@@ -143,6 +164,4 @@ class MealsService with ChangeNotifier {
       throw error;
     }
   }
-
-  Future<void> setMenu(dateTime, String type, int foodId) async {}
 }

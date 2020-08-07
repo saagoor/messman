@@ -8,12 +8,13 @@ import 'package:provider/provider.dart';
 
 class DepositsListView extends StatelessWidget {
   final List<Deposit> deposits;
-  DepositsListView(this.deposits);
+  final double reduceSize;
+  DepositsListView(this.deposits, {this.reduceSize = 0});
 
   @override
   Widget build(BuildContext context) {
     if (deposits.length <= 0) {
-      return ListViewEmpty(text: 'No deposits found!');
+      return ListViewEmpty(text: 'No deposits found!', reduceSize: reduceSize);
     }
     return ListView.builder(
       padding: const EdgeInsets.all(16),

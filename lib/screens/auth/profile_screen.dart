@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mess/models/models.dart';
+import 'package:mess/screens/tabs/tasks_tab.dart';
 import 'package:mess/services/auth_service.dart';
+import 'package:mess/services/deposits_service.dart';
 import 'package:mess/services/expenses_service.dart';
+import 'package:mess/services/tasks_service.dart';
+import 'package:mess/widgets/deposits_list_view.dart';
 import 'package:mess/widgets/expenses_list_view.dart';
-import 'package:mess/widgets/profile_card.dart';
+import 'package:mess/widgets/user/profile_card.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -13,6 +17,8 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthService>(context);
     final expense = Provider.of<ExpensesService>(context);
+    final deposit = Provider.of<DepositsService>(context);
+    final task = Provider.of<TasksService>(context);
 
     User user = ModalRoute.of(context).settings.arguments as User;
     if (user == null) {
@@ -42,9 +48,9 @@ class ProfileScreen extends StatelessWidget {
           ],
           body: TabBarView(
             children: [
-              ExpensesListView(expense.items, noItemHeight: 300,),
-              ExpensesListView(expense.expensesByUser(user?.id), noItemHeight: 300,),
-              ExpensesListView(expense.items),
+              DepositsListView(deposit.depositsByUser(user?.id),  reduceSize: 300),
+              ExpensesListView(expense.expensesByUser(user?.id), reduceSize: 300),
+              TasksListView(task.usersTasks(userId: user?.id), reduceSize: 300),
             ],
           ),
         ),

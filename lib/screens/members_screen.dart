@@ -5,6 +5,7 @@ import 'package:mess/screens/save_member_screen.dart';
 import 'package:mess/services/helpers.dart';
 import 'package:mess/services/members_service.dart';
 import 'package:mess/widgets/list_view_empty.dart';
+import 'package:mess/widgets/user/members_circle_avatar.dart';
 import 'package:provider/provider.dart';
 
 class MembersScreen extends StatefulWidget {
@@ -65,7 +66,10 @@ class MemberListItem extends StatelessWidget {
       child: ListTile(
         leading: Hero(
           tag: member.id ?? 0,
-          child: buildMemberAvatar(member.imageUrl, member.name[0]),
+          child: MembersCircleAvatar(
+            imageUrl: member.imageUrl,
+            firstChar: member.name[0],
+          ),
         ),
         title: Text(member.name),
         subtitle: Text(member.email),
@@ -89,24 +93,6 @@ class MemberListItem extends StatelessWidget {
       ),
     );
   }
-
-  buildMemberAvatar(String imageUrl, String firstChar) => CircleAvatar(
-        radius: 50,
-        child: ClipOval(
-          child: Image.network(
-            imageUrl ?? '',
-            errorBuilder: (ctx, child, trace) {
-              return Text(
-                firstChar.toUpperCase(),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              );
-            },
-            height: 58,
-            width: 58,
-            fit: BoxFit.cover,
-          ),
-        ),
-      );
 }
 
 enum MemberActions {

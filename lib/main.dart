@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mess/models/meal.dart';
 import 'package:mess/screens/add_deposit_screen.dart';
 import 'package:mess/screens/add_expense_screen.dart';
 import 'package:mess/screens/auth/forgot_password_screen.dart';
 import 'package:mess/screens/auth/profile_screen.dart';
 import 'package:mess/screens/auth/signin_screen.dart';
 import 'package:mess/screens/auth/signup_screen.dart';
+import 'package:mess/screens/chat/chat_screen.dart';
 import 'package:mess/screens/close_month_screen.dart';
 import 'package:mess/screens/deposits_screen.dart';
 import 'package:mess/screens/meals/meals_screen.dart';
@@ -42,40 +42,50 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider2<AuthService, MessService, MembersService>(
           create: (ctx) => MembersService(),
-          update: (ctx, auth, messData, prev){
-            final prevItems = prev.isLoaded || prev.items.length > 0 ? prev.items : messData.members;
+          update: (ctx, auth, messData, prev) {
+            final prevItems = prev.isLoaded || prev.items.length > 0
+                ? prev.items
+                : messData.members;
             return MembersService(token: auth.token, prevItems: prevItems);
           },
         ),
         ChangeNotifierProxyProvider2<AuthService, MessService, ExpensesService>(
           create: (ctx) => ExpensesService(),
-          update: (ctx, auth, messData, prev){
-            final prevItems = prev.isLoaded || prev.items.length > 0 ? prev.items : messData.expenses;
+          update: (ctx, auth, messData, prev) {
+            final prevItems = prev.isLoaded || prev.items.length > 0
+                ? prev.items
+                : messData.expenses;
             return ExpensesService(token: auth.token, prevItems: prevItems);
           },
         ),
         ChangeNotifierProxyProvider2<AuthService, MessService, TasksService>(
           create: (ctx) => TasksService(),
-          update: (ctx, auth, messData, prev){
-            final prevItems = prev.isLoaded || prev.items.length > 0 ? prev.items : messData.tasks;
+          update: (ctx, auth, messData, prev) {
+            final prevItems = prev.isLoaded || prev.items.length > 0
+                ? prev.items
+                : messData.tasks;
             return TasksService(token: auth.token, prevItems: prevItems);
           },
         ),
         ChangeNotifierProxyProvider2<AuthService, MessService, MealsService>(
           create: (ctx) => MealsService(),
-          update: (ctx, auth, messData, prev){
-            final Map<DateTime, DaysMeal> prevItems = prev.isLoaded ? prev.monthsMeals : messData.monthsMeals;
-            return MealsService(token: auth.token, monthsMeals: prevItems);
+          update: (ctx, auth, messData, prev) {
+            return MealsService(token: auth.token, monthsMeals: messData.monthsMeals);
           },
         ),
         ChangeNotifierProxyProvider2<AuthService, MessService, DepositsService>(
           create: (ctx) => DepositsService(),
-          update: (ctx, auth, messData, prev){
-            final prevItems = prev.isLoaded || prev.items.length > 0 ? prev.items : messData.deposits;
+          update: (ctx, auth, messData, prev) {
+            final prevItems = prev.isLoaded || prev.items.length > 0
+                ? prev.items
+                : messData.deposits;
             return DepositsService(token: auth.token, prevItems: prevItems);
           },
         ),
-        ChangeNotifierProvider.value(value: FoodsService()),
+        ChangeNotifierProxyProvider<AuthService, FoodsService>(
+          create: (ctx) => FoodsService(),
+          update: (ctx, auth, prev) => FoodsService(token: auth.token, prevItems: prev.items),
+        ),
         ChangeNotifierProvider.value(value: SettingsService()),
       ],
       child: MessApp(),
@@ -100,13 +110,12 @@ class MessApp extends StatelessWidget {
           headline3: TextStyle(fontSize: 18),
         ),
         cardTheme: CardTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          clipBehavior: Clip.antiAlias,
-          elevation: 4,
-          shadowColor: Colors.grey.withOpacity(0.2)
-        ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            clipBehavior: Clip.antiAlias,
+            elevation: 4,
+            shadowColor: Colors.grey.withOpacity(0.2)),
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -139,6 +148,7 @@ class MessApp extends StatelessWidget {
         AddExpenseScreen.routeName: (ctx) => AddExpenseScreen(),
         DepositsScreen.routeName: (ctx) => DepositsScreen(),
         AddDepositScreen.routeName: (ctx) => AddDepositScreen(),
+        ChatScreen.routeName: (ctx) => ChatScreen(),
       },
     );
   }

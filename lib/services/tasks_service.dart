@@ -91,10 +91,11 @@ class TasksService with ChangeNotifier {
         headers: httpHeader(token),
         body: json.encode(task.toJson()),
       );
-      if(response.statusCode == 200){
+      if(response.statusCode == 200 || response.statusCode == 201){
         final result = json.decode(response.body) as Map<String, dynamic>;
         if(result != null && result['data'] != null){
           _items.add(Task.fromJson(result['data']));
+          print(result);
           notifyListeners();
         }
       }else{

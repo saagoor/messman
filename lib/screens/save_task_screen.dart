@@ -4,8 +4,8 @@ import 'package:mess/services/helpers.dart';
 import 'package:mess/services/tasks_service.dart';
 import 'package:mess/widgets/input_date_picker.dart';
 import 'package:mess/widgets/input_time_picker.dart';
-import 'package:mess/widgets/member_selector.dart';
 import 'package:mess/widgets/screen_loading.dart';
+import 'package:mess/widgets/user/member_selector.dart';
 import 'package:provider/provider.dart';
 
 class SaveTaskScreen extends StatefulWidget {

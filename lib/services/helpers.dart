@@ -90,6 +90,7 @@ Future<void> handleHttpErrors(http.Response response, {Function logoutCallback})
     throw HttpException(
         'Sorry you\'re not logged in. You need to be logged in for this action.');
   } else if (response.statusCode == 500) {
+    print(response.body);
     throw HttpException(
         'Sorry, internal server error occured. Please try again later or contact the support.');
   }

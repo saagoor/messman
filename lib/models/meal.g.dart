@@ -56,18 +56,25 @@ Map<String, dynamic> _$MembersMealToJson(MembersMeal instance) =>
 
 DaysMeal _$DaysMealFromJson(Map<String, dynamic> json) {
   return DaysMeal(
-    messMeals: (json['mess_meals'] as Map<String, dynamic>)?.map(
-      (k, e) => MapEntry(
-          k, e == null ? null : Meal.fromJson(e as Map<String, dynamic>)),
-    ),
     membersMeals: (json['members_meals'] as List)
         ?.map((e) =>
             e == null ? null : MembersMeal.fromJson(e as Map<String, dynamic>))
         ?.toList(),
+    breakfast: json['breakfast'] == null
+        ? null
+        : Meal.fromJson(json['breakfast'] as Map<String, dynamic>),
+    lunch: json['lunch'] == null
+        ? null
+        : Meal.fromJson(json['lunch'] as Map<String, dynamic>),
+    dinner: json['dinner'] == null
+        ? null
+        : Meal.fromJson(json['dinner'] as Map<String, dynamic>),
   );
 }
 
 Map<String, dynamic> _$DaysMealToJson(DaysMeal instance) => <String, dynamic>{
       'members_meals': instance.membersMeals?.map((e) => e?.toJson())?.toList(),
-      'mess_meals': instance.messMeals?.map((k, e) => MapEntry(k, e?.toJson())),
+      'breakfast': instance.breakfast?.toJson(),
+      'lunch': instance.lunch?.toJson(),
+      'dinner': instance.dinner?.toJson(),
     };

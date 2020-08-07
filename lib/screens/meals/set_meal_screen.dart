@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mess/screens/meals/foods_search_result.dart';
+import 'package:mess/services/foods_service.dart';
+import 'package:mess/services/helpers.dart';
 import 'package:provider/provider.dart';
 
 class SetMealScreen extends StatefulWidget {
@@ -15,11 +17,24 @@ class _SetMealScreenState extends State<SetMealScreen> {
   TextEditingController _searchQueryController = TextEditingController();
   bool _isSearching = false;
   String _searchQuery = '';
+  FoodsService foodsService;
+
+  Future<void> loadFoods() async {
+    await foodsService.fetchAndSet().catchError((error) {
+      showHttpError(context, error);
+      print(error);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final passedMeal = ModalRoute.of(context).settings.arguments as String;
-    if (passedMeal != null) mealType = passedMeal;
+    final passedMealType = ModalRoute.of(context).settings.arguments as String;
+    if (passedMealType != null) mealType = passedMealType;
+
+    foodsService = Provider.of<FoodsService>(context);
+    if (!foodsService.isLoaded) {
+      loadFoods();
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +42,10 @@ class _SetMealScreenState extends State<SetMealScreen> {
         title: _isSearching ? _buildSearchField() : Text('Set $mealType'),
         actions: _buildActions(),
       ),
-      body: Provider<DateTime>.value(value: DateTime.now(), child: FoodSearchResult(_searchQuery)),
+      body: RefreshIndicator(
+        onRefresh: loadFoods,
+        child: FoodSearchResult(_searchQuery),
+      ),
       backgroundColor: Theme.of(context).cardColor,
     );
   }

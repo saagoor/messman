@@ -4,7 +4,7 @@ import 'package:mess/models/models.dart';
 import 'package:mess/services/auth_service.dart';
 import 'package:mess/services/helpers.dart';
 import 'package:mess/services/mess_service.dart';
-import 'package:mess/widgets/meal_size_controller.dart';
+import 'package:mess/widgets/meal/meal_size_controller.dart';
 import 'package:mess/widgets/screen_loading.dart';
 import 'package:provider/provider.dart';
 

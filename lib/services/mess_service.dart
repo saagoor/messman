@@ -25,14 +25,14 @@ class MessService with ChangeNotifier {
   List<Expense> expenses = [];
   List<Task> tasks = [];
   List<User> members = [];
-  Map<DateTime, DaysMeal> monthsMeals = {};
+  Map<String, DaysMeal> monthsMeals = {};
   List<Deposit> deposits = [];
 
   Future<void> fetchAndSet() async {
     if (auth.user == null) {
       throw HttpException('You\'re not authenticated!');
     } else if (auth.user.messId == null) {
-      return;
+      throw HttpException('You haven\'t joined any Mess!');
     }
     try {
       final response = await http.get(
@@ -92,11 +92,11 @@ class MessService with ChangeNotifier {
 
     // Setting daily meals data
     if (data['meals'] != null) {
-      // List<MembersMeal> tempMembersMeals = [];
-      // data['meals'].forEach((item) {
-      //   if (item != null) tempMembersMeals.add(MembersMeal.fromJson(item));
-      // });
-      // MembersMeals = tempMembersMeals;
+      Map<String, DaysMeal> tempMeals = {};
+      data['meals'].forEach((i, val) {
+        tempMeals.putIfAbsent(i, () => DaysMeal.fromJson(val));
+      });
+      monthsMeals = tempMeals;
     }
 
     // Setting depositsdata
@@ -125,9 +125,9 @@ class MessService with ChangeNotifier {
           throw HttpException('Could not join mess!');
         }
       } else {
-        try{
+        try {
           await handleHttpErrors(response);
-        }catch(error){
+        } catch (error) {
           throw error;
         }
       }
@@ -151,9 +151,9 @@ class MessService with ChangeNotifier {
           return _mess?.id;
         }
       } else {
-        try{
+        try {
           await handleHttpErrors(response);
-        }catch(error){
+        } catch (error) {
           throw error;
         }
       }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mess/constants.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +13,6 @@ import 'package:mess/models/food.dart';
 part 'meal.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
-
 class Meal with ChangeNotifier {
   int id;
   int messId;
@@ -36,17 +36,130 @@ class Meal with ChangeNotifier {
   factory Meal.fromJson(Map<String, dynamic> json) => _$MealFromJson(json);
   Map<String, dynamic> toJson() => _$MealToJson(this);
 
-  void like(){
+  Future<void> like(String token) async {
+    bool oldValue = likedByUser;
+    if (likedByUser == null) {
+      // Previusly no reaction
+      likes++;
+      likedByUser = true;
+    } else if (!likedByUser) {
+      // Previusly disliked
+      dislikes--;
+      likes++;
+      likedByUser = true;
+    } else if (likedByUser) {
+      // Previusly liked
+      likes--;
+      likedByUser = null;
+    }
 
+    notifyListeners();
+
+    try {
+      final response = await http.post(
+        baseUrl + 'meal/$id/like',
+        headers: httpHeader(token),
+      );
+      if (response.statusCode == 200) {
+        final result = json.decode(response.body) as Map<String, dynamic>;
+        if (result != null && result['data'] != null) {
+          final newMeal = Meal.fromJson(result['data']);
+          return updateSelf(newMeal);
+        }
+      } else {
+        likedByUser = oldValue;
+        notifyListeners();
+        return handleHttpErrors(response);
+      }
+    } catch (error) {
+      likedByUser = oldValue;
+      notifyListeners();
+      throw error;
+    }
   }
 
-  void dislike(){
-
+  Future<void> dislike(String token) async {
+    bool oldValue = likedByUser;
+    if (likedByUser == null) {
+      // Previusly no reaction
+      dislikes++;
+      likedByUser = false;
+    } else if (likedByUser) {
+      // Previusly liked
+      likes--;
+      dislikes++;
+      likedByUser = false;
+    } else if (!likedByUser) {
+      // Previusly disliked
+      dislikes--;
+      likedByUser = null;
+    }
+    notifyListeners();
+    try {
+      final response = await http.delete(
+        baseUrl + 'meal/$id/like',
+        headers: httpHeader(token),
+      );
+      if (response.statusCode == 200) {
+        final result = json.decode(response.body) as Map<String, dynamic>;
+        if (result != null && result['data'] != null) {
+          final newMeal = Meal.fromJson(result['data']);
+          return updateSelf(newMeal);
+        }
+      } else {
+        likedByUser = oldValue;
+        notifyListeners();
+        return handleHttpErrors(response);
+      }
+    } catch (error) {
+      likedByUser = oldValue;
+      notifyListeners();
+      throw error;
+    }
   }
-  
+
+  Future<void> setFood(Food newFood, String token) async {
+    final oldFood = food;
+    food = newFood;
+    print(food?.title);
+    notifyListeners();
+    try {
+      final response = await http.post(
+        baseUrl + 'meal/setfood',
+        headers: httpHeader(token),
+        body: json.encode({
+          'type': type,
+          'date': DateFormat('yyyy-MM-dd').format(date),
+          'food_id': newFood.id,
+        }),
+      );
+      if (response.statusCode == 200) {
+        final result = json.decode(response.body) as Map<String, dynamic>;
+        if (result != null && result['data'] != null) {
+          final newMeal = Meal.fromJson(result['data']);
+          return updateSelf(newMeal);
+        }
+      } else {
+        food = oldFood;
+        notifyListeners();
+        return handleHttpErrors(response);
+      }
+    } catch (error) {
+      food = oldFood;
+      notifyListeners();
+      throw error;
+    }
+  }
+
+  void updateSelf(Meal newSelf) {
+    id = newSelf.id;
+    food = newSelf.food;
+    likes = newSelf.likes;
+    dislikes = newSelf.dislikes;
+    likedByUser = newSelf.likedByUser;
+    notifyListeners();
+  }
 }
-
-
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class MembersMeal with ChangeNotifier {
@@ -104,13 +217,13 @@ class MembersMeal with ChangeNotifier {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
-class DaysMeal{
+class DaysMeal {
   final List<MembersMeal> membersMeals;
-  final Map<String, Meal> messMeals;
-  DaysMeal({
-    this.messMeals,
-    this.membersMeals,
-  });
+  final Meal breakfast;
+  final Meal lunch;
+  final Meal dinner;
+
+  DaysMeal({this.membersMeals, this.breakfast, this.lunch, this.dinner});
 
   factory DaysMeal.fromJson(Map<String, dynamic> json) =>
       _$DaysMealFromJson(json);

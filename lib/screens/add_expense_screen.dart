@@ -3,10 +3,9 @@ import 'package:mess/models/models.dart';
 import 'package:mess/services/auth_service.dart';
 import 'package:mess/services/expenses_service.dart';
 import 'package:mess/services/helpers.dart';
-import 'package:mess/services/members_service.dart';
 import 'package:mess/services/mess_service.dart';
 import 'package:mess/widgets/input_date_picker.dart';
-import 'package:mess/widgets/member_selector.dart';
+import 'package:mess/widgets/user/member_selector.dart';
 import 'package:provider/provider.dart';
 
 class AddExpenseScreen extends StatefulWidget {
@@ -63,13 +62,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     final messService = Provider.of<MessService>(context);
-    final membersService = Provider.of<MembersService>(context);
     final authService = Provider.of<AuthService>(context);
-    if (!membersService.isLoaded) {
-      membersService.fetchAndSet().catchError((error) {
-        showHttpError(context, error);
-      });
-    }
+
     if (_expense.expenderId == null) {
       _expense.expenderId = authService.user.id;
     }
@@ -145,8 +139,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         labelText: 'Expended By',
                         initialId: _expense.expenderId,
                         onChanged: (int selectedMemberId) {
-                          _expense.expenderId =
-                              selectedMemberId;
+                          _expense.expenderId = selectedMemberId;
                         },
                       ),
                       SizedBox(height: 20),

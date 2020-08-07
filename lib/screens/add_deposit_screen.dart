@@ -6,7 +6,7 @@ import 'package:mess/services/helpers.dart';
 import 'package:mess/services/members_service.dart';
 import 'package:mess/services/mess_service.dart';
 import 'package:mess/widgets/input_date_picker.dart';
-import 'package:mess/widgets/member_selector.dart';
+import 'package:mess/widgets/user/member_selector.dart';
 import 'package:provider/provider.dart';
 
 class AddDepositScreen extends StatefulWidget {

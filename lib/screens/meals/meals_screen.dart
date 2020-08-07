@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mess/screens/meals/add_guest_meal.dart';
 import 'package:mess/screens/meals/meals_planner_view.dart';
 import 'package:mess/screens/meals/meals_table_view_screen.dart';
 
@@ -6,8 +7,11 @@ class MealsScreen extends StatelessWidget {
   static const routeName = '/meals';
 
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    int currentIndex = (now.day - 1);
+
     return DefaultTabController(
-      initialIndex: (DateTime.now().day - 1),
+      initialIndex: (now.day - 1),
       length: lastDay(),
       child: Scaffold(
         appBar: AppBar(
@@ -46,6 +50,9 @@ class MealsScreen extends StatelessWidget {
                     width: 1,
                   ),
                 ),
+                onTap: (tappedIndex) {
+                  currentIndex = tappedIndex;
+                },
                 tabs: List.generate(
                     lastDay(), (index) => Tab(text: '${index + 1}')).toList(),
               ),
@@ -53,12 +60,21 @@ class MealsScreen extends StatelessWidget {
           ),
         ),
         body: TabBarView(
-
           children:
               List.generate(lastDay(), (index) => MealsPlannerView(index + 1))
                   .toList(),
         ),
-        
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.exposure_plus_1),
+          onPressed: () {
+            final dateTime = DateTime(now.year, now.month, currentIndex + 1);
+            showModalBottomSheet(
+              context: context,
+              builder: (ctx) => AddGuestMeal(date: dateTime),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+            );
+          },
+        ),
       ),
     );
   }

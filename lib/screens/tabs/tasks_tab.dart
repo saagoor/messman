@@ -4,8 +4,9 @@ import 'package:mess/screens/save_task_screen.dart';
 import 'package:mess/services/auth_service.dart';
 import 'package:mess/services/helpers.dart';
 import 'package:mess/services/tasks_service.dart';
+import 'package:mess/widgets/list_view_empty.dart';
 import 'package:mess/widgets/no_scaffold_fab.dart';
-import 'package:mess/widgets/users_tasks.dart';
+import 'package:mess/widgets/user/users_tasks.dart';
 import 'package:provider/provider.dart';
 
 class TasksTab extends StatelessWidget {
@@ -26,6 +27,7 @@ class _TasksTabContentState extends State<TasksTabContent>
   int _index = 0;
 
   TasksService tasksService;
+  
 
   Future<void> _loadTasks() async {
     await tasksService
@@ -36,7 +38,6 @@ class _TasksTabContentState extends State<TasksTabContent>
   @override
   Widget build(BuildContext context) {
     tasksService = Provider.of<TasksService>(context);
-
     return Stack(
       children: <Widget>[
         RefreshIndicator(
@@ -59,7 +60,7 @@ class _TasksTabContentState extends State<TasksTabContent>
                   },
                 ),
               ),
-              Expanded(child: TasksListView(getTasks())),
+              Expanded(child: TasksListView(getTasks(_index))),
             ],
           ),
         ),
@@ -73,8 +74,8 @@ class _TasksTabContentState extends State<TasksTabContent>
     );
   }
 
-  List<Task> getTasks() {
-    switch (_index) {
+  List<Task> getTasks(int index) {
+    switch (index) {
       case 0:
         return tasksService.usersTasks(
           userId: Provider.of<AuthService>(context, listen: false).user.id,
@@ -102,20 +103,13 @@ class _TasksTabContentState extends State<TasksTabContent>
 
 class TasksListView extends StatelessWidget {
   final List<Task> tasks;
-  TasksListView(this.tasks);
+  final double reduceSize;
+  TasksListView(this.tasks, {this.reduceSize = 0});
 
   @override
   Widget build(BuildContext context) {
     if (tasks == null || tasks.length <= 0) {
-      return SingleChildScrollView(
-        
-        child: Container(
-          height: MediaQuery.of(context).size.height - kBottomNavigationBarHeight - 100,
-          child: Center(
-            child: Text('No task found!'),
-          ),
-        ),
-      );
+      return ListViewEmpty(text: 'No task found!', reduceSize: reduceSize,);
     }
     return ListView.builder(
       itemCount: tasks.length,
