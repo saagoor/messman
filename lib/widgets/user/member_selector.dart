@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/members_service.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/members_service.dart';
 import 'package:provider/provider.dart';
 
 class MemberSelector extends StatelessWidget {

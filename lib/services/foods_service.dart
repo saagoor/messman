@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
-import 'package:mess/constants.dart';
-import 'package:mess/models/food.dart';
+import 'package:messman/constants.dart';
+import 'package:messman/models/food.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:mess/models/http_exception.dart';
-import 'package:mess/services/helpers.dart';
+import 'package:messman/models/http_exception.dart';
+import 'package:messman/services/helpers.dart';
 
 class FoodsService with ChangeNotifier {
   final String token;

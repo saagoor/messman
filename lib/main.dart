@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:mess/screens/add_deposit_screen.dart';
-import 'package:mess/screens/add_expense_screen.dart';
-import 'package:mess/screens/auth/forgot_password_screen.dart';
-import 'package:mess/screens/auth/profile_screen.dart';
-import 'package:mess/screens/auth/signin_screen.dart';
-import 'package:mess/screens/auth/signup_screen.dart';
-import 'package:mess/screens/chat/chat_screen.dart';
-import 'package:mess/screens/close_month_screen.dart';
-import 'package:mess/screens/deposits_screen.dart';
-import 'package:mess/screens/meals/meals_screen.dart';
-import 'package:mess/screens/meals/meals_table_view_screen.dart';
-import 'package:mess/screens/meals/set_meal_screen.dart';
-import 'package:mess/screens/members_screen.dart';
-import 'package:mess/screens/mess/create_mess_screen.dart';
-import 'package:mess/screens/save_member_screen.dart';
-import 'package:mess/screens/save_task_screen.dart';
-import 'package:mess/screens/settings_screen.dart';
-import 'package:mess/screens/wrapper.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/deposits_service.dart';
-import 'package:mess/services/expenses_service.dart';
-import 'package:mess/services/foods_service.dart';
-import 'package:mess/services/meals_service.dart';
-import 'package:mess/services/members_service.dart';
-import 'package:mess/services/mess_service.dart';
-import 'package:mess/services/settings_service.dart';
-import 'package:mess/services/tasks_service.dart';
+import 'package:messman/screens/add_deposit_screen.dart';
+import 'package:messman/screens/add_expense_screen.dart';
+import 'package:messman/screens/auth/forgot_password_screen.dart';
+import 'package:messman/screens/auth/profile_screen.dart';
+import 'package:messman/screens/auth/signin_screen.dart';
+import 'package:messman/screens/auth/signup_screen.dart';
+import 'package:messman/screens/chat/chat_screen.dart';
+import 'package:messman/screens/close_month_screen.dart';
+import 'package:messman/screens/deposits_screen.dart';
+import 'package:messman/screens/meals/meals_screen.dart';
+import 'package:messman/screens/meals/meals_table_view_screen.dart';
+import 'package:messman/screens/meals/set_meal_screen.dart';
+import 'package:messman/screens/members_screen.dart';
+import 'package:messman/screens/mess/create_mess_screen.dart';
+import 'package:messman/screens/save_member_screen.dart';
+import 'package:messman/screens/save_task_screen.dart';
+import 'package:messman/screens/settings_screen.dart';
+import 'package:messman/screens/wrapper.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/deposits_service.dart';
+import 'package:messman/services/expenses_service.dart';
+import 'package:messman/services/foods_service.dart';
+import 'package:messman/services/meals_service.dart';
+import 'package:messman/services/members_service.dart';
+import 'package:messman/services/mess_service.dart';
+import 'package:messman/services/settings_service.dart';
+import 'package:messman/services/tasks_service.dart';
 import 'package:provider/provider.dart';
 
 main() => runApp(MyApp());
@@ -70,7 +70,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider2<AuthService, MessService, MealsService>(
           create: (ctx) => MealsService(),
           update: (ctx, auth, messData, prev) {
-            return MealsService(token: auth.token, monthsMeals: messData.monthsMeals);
+            return MealsService(
+                token: auth.token, monthsMeals: messData.monthsMeals);
           },
         ),
         ChangeNotifierProxyProvider2<AuthService, MessService, DepositsService>(
@@ -84,7 +85,8 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<AuthService, FoodsService>(
           create: (ctx) => FoodsService(),
-          update: (ctx, auth, prev) => FoodsService(token: auth.token, prevItems: prev.items),
+          update: (ctx, auth, prev) =>
+              FoodsService(token: auth.token, prevItems: prev.items),
         ),
         ChangeNotifierProvider.value(value: SettingsService()),
       ],
@@ -101,6 +103,8 @@ class MessApp extends StatelessWidget {
         fontFamily: 'ProductSans',
         primarySwatch: Colors.lightBlue,
         textTheme: TextTheme(
+          bodyText1: TextStyle(fontSize: 16),
+          bodyText2: TextStyle(fontSize: 15),
           headline1: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.normal,

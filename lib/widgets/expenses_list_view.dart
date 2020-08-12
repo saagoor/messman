@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess/models/models.dart';
-import 'package:mess/services/expenses_service.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/services/members_service.dart';
-import 'package:mess/widgets/amount.dart';
-import 'package:mess/widgets/list_view_empty.dart';
+import 'package:messman/models/models.dart';
+import 'package:messman/services/expenses_service.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/services/members_service.dart';
+import 'package:messman/widgets/amount.dart';
+import 'package:messman/widgets/list_view_empty.dart';
 import 'package:provider/provider.dart';
-
 
 class ExpensesListView extends StatelessWidget {
   final List<Expense> expenses;
@@ -17,7 +16,10 @@ class ExpensesListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (expenses.length <= 0) {
-      return ListViewEmpty(text: 'No expense found!', reduceSize: reduceSize,);
+      return ListViewEmpty(
+        text: 'No expense found!',
+        reduceSize: reduceSize,
+      );
     }
 
     return ListView.builder(
@@ -57,7 +59,8 @@ class ExpenseListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final User expender = Provider.of<MembersService>(context).memberById(expense.expenderId);
+    final User expender =
+        Provider.of<MembersService>(context).memberById(expense.expenderId);
     return GestureDetector(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -69,10 +72,8 @@ class ExpenseListItem extends StatelessWidget {
               radius: 30,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Amount(
-                  expense.amount.toDouble(),
-                  fontWeight: FontWeight.bold
-                ),
+                child: Amount(expense.amount.toDouble(),
+                    fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(width: 15),

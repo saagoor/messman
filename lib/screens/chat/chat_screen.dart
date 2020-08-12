@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mess/screens/chat/chat_form.dart';
-import 'package:mess/screens/chat/chat_messages_list.dart';
-import 'package:mess/screens/chat/members_online_status.dart';
+import 'package:messman/screens/chat/chat_form.dart';
+import 'package:messman/screens/chat/chat_messages_list.dart';
+import 'package:messman/screens/chat/members_online_status.dart';
 
 class ChatScreen extends StatelessWidget {
   static const routeName = 'chat';

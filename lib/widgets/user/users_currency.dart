@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess/services/mess_service.dart';
+import 'package:messman/services/mess_service.dart';
 import 'package:provider/provider.dart';
 
 class UsersCurrency extends StatelessWidget {

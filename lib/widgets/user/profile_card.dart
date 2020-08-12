@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mess/models/models.dart';
-import 'package:mess/services/auth_service.dart';
+import 'package:messman/models/models.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/widgets/network_circle_avatar.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -20,12 +21,7 @@ class ProfileCard extends StatelessWidget {
       children: <Widget>[
         Hero(
           tag: user.id ?? 0,
-          child: CircleAvatar(
-            radius: 50,
-            backgroundImage: user?.imageUrl != null
-                ? NetworkImage(user.imageUrl)
-                : AssetImage('assets/images/user-placeholder.png'),
-          ),
+          child: NetworkCircleAvatar(imageUrl: user?.imageUrl, size: 100),
         ),
         SizedBox(height: 20),
         Text(
@@ -102,7 +98,7 @@ class ProfileCard extends StatelessWidget {
   }
 
   Future<void> _launchPhone() async {
-    if(user?.phone == null || user.phone.isEmpty){
+    if (user?.phone == null || user.phone.isEmpty) {
       throw 'User did not add a phone number!';
     }
     final url = 'tel:${user.phone}';

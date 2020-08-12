@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mess/services/members_service.dart';
-import 'package:mess/widgets/user/members_circle_avatar.dart';
+import 'package:messman/services/members_service.dart';
+import 'package:messman/widgets/user/members_circle_avatar.dart';
 import 'package:provider/provider.dart';
 
 class MembersOnlineStatus extends StatelessWidget {

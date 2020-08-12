@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mess/constants.dart';
-import 'package:mess/models/http_exception.dart';
-import 'package:mess/models/models.dart';
-import 'package:mess/services/helpers.dart';
+import 'package:messman/constants.dart';
+import 'package:messman/models/http_exception.dart';
+import 'package:messman/models/models.dart';
+import 'package:messman/services/helpers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -34,12 +34,11 @@ class AuthService with ChangeNotifier {
     return _user;
   }
 
-  set messId(int messId){
+  set messId(int messId) {
     this._user.messId = messId;
     _setAuthPrefs();
     notifyListeners();
   }
-
 
   void _autoLogout() {
     if (_authTimer != null) {
@@ -81,6 +80,7 @@ class AuthService with ChangeNotifier {
         return _handleErrors(response);
       }
     } catch (error) {
+      print(error);
       throw HttpException(error.toString());
     }
   }
@@ -162,8 +162,8 @@ class AuthService with ChangeNotifier {
     }
     _token = extractedAuthData['token'];
     _user = User.fromJson(json.decode(userPrefs.getString('user')));
-    
-    if(_token == null || _user == null){
+
+    if (_token == null || _user == null) {
       return false;
     }
     _expiryDate = expiryDate;

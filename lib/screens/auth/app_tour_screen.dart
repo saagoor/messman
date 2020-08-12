@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mess/services/settings_service.dart';
+import 'package:messman/services/settings_service.dart';
 import 'package:provider/provider.dart';
 
 class AppTourScreen extends StatefulWidget {
@@ -35,22 +35,21 @@ class _AppTourScreenState extends State<AppTourScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          // gradient: LinearGradient(
-          //   begin: Alignment.topCenter,
-          //   end: Alignment.bottomCenter,
-          //   stops: [0.1, 0.4, 0.7, 0.9],
-          //   colors: [
-          //     Color(0xFF3594DD),
-          //     Color(0xFF4563DB),
-          //     Color(0xFF5036D5),
-          //     Color(0xFF5B16D0),
-          //   ],
-          // ),
-        ),
+            // gradient: LinearGradient(
+            //   begin: Alignment.topCenter,
+            //   end: Alignment.bottomCenter,
+            //   stops: [0.1, 0.4, 0.7, 0.9],
+            //   colors: [
+            //     Color(0xFF3594DD),
+            //     Color(0xFF4563DB),
+            //     Color(0xFF5036D5),
+            //     Color(0xFF5B16D0),
+            //   ],
+            // ),
+            ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 40),
           child: Column(
@@ -65,7 +64,7 @@ class _AppTourScreenState extends State<AppTourScreen> {
                   },
                   child: Text(
                     (_currentPage < _numPages - 1) ? 'Skip' : '',
-                    style: TextStyle( fontSize: 20),
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
               ),
@@ -81,22 +80,21 @@ class _AppTourScreenState extends State<AppTourScreen> {
                     },
                     children: <Widget>[
                       AppTourItem(
-                        imageName: 'chat.png',
+                        imageName: 'dinner.png',
                         title: 'Member wise meal on off!',
                         description:
-                            'Lorem ipsum doller sit ammet, consrct edip sittinf ammey hwy dada why? This is business!',
-                      ),
-                      AppTourItem(
-                        imageName: 'dinner.png',
-                        title: 'Instant text messaging with mess members!',
-                        description:
-                            'Lorem ipsum doller sit ammet, consrct edip sittinf ammey hwy dada why? This is business!',
+                            'Members or manager can on/off specific meal of a specific member.',
                       ),
                       AppTourItem(
                         imageName: 'lunch.png',
-                        title: 'Instant text messaging with mess members!',
+                        title: 'Like or Dislike todays meals!',
                         description:
-                            'Lorem ipsum doller sit ammet, consrct edip sittinf ammey hwy dada why? This is business!',
+                            'Whats on todays meal menu. Like or dislike particular meal!',
+                      ),
+                      AppTourItem(
+                        imageName: 'chat.png',
+                        title: 'Instant text messaging!',
+                        description: 'Members can group chat with each other!',
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -107,14 +105,19 @@ class _AppTourScreenState extends State<AppTourScreen> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Text('Let\'s Get Started', style: TextStyle(fontSize: 20),),
+                                  Text(
+                                    'Let\'s Get Started',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
                                   SizedBox(width: 10),
                                   Icon(Icons.arrow_forward)
                                 ],
                               ),
                               textColor: Theme.of(context).primaryColorDark,
-                              onPressed: () async{
-                                await Provider.of<SettingsService>(context, listen: false).completeAppTour();
+                              onPressed: () async {
+                                await Provider.of<SettingsService>(context,
+                                        listen: false)
+                                    .completeAppTour();
                               },
                             ),
                           ],
@@ -188,15 +191,14 @@ class AppTourItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Center(
-            child: Image.asset(
-              'assets/images/$imageName',
-              height: 300,
-              width: 300,
-              fit: BoxFit.contain,
-            ),
+          Image.asset(
+            'assets/images/$imageName',
+            height: 150,
+            width: 150,
+            fit: BoxFit.contain,
           ),
           SizedBox(height: 30),
           Text(
@@ -204,7 +206,7 @@ class AppTourItem extends StatelessWidget {
             style: Theme.of(context).textTheme.headline6,
           ),
           SizedBox(height: 15),
-          Text(description ?? ''),
+          Text(description ?? '', textAlign: TextAlign.center),
         ],
       ),
     );

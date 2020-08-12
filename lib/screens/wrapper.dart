@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mess/screens/auth/app_tour_screen.dart';
-import 'package:mess/screens/auth/signin_screen.dart';
-import 'package:mess/screens/auth/splash_screen.dart';
-import 'package:mess/screens/home_screen.dart';
-import 'package:mess/screens/mess/join_mess_screen.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/settings_service.dart';
+import 'package:messman/screens/auth/app_tour_screen.dart';
+import 'package:messman/screens/auth/signin_screen.dart';
+import 'package:messman/screens/auth/splash_screen.dart';
+import 'package:messman/screens/home_screen.dart';
+import 'package:messman/screens/mess/join_mess_screen.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/settings_service.dart';
 import 'package:provider/provider.dart';
 
 class Wrapper extends StatelessWidget {

@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/deposits_service.dart';
-import 'package:mess/services/expenses_service.dart';
-import 'package:mess/services/meals_service.dart';
-import 'package:mess/services/members_service.dart';
-import 'package:mess/services/mess_service.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/deposits_service.dart';
+import 'package:messman/services/expenses_service.dart';
+import 'package:messman/services/meals_service.dart';
+import 'package:messman/services/members_service.dart';
+import 'package:messman/services/mess_service.dart';
 import 'package:provider/provider.dart';
 
 class CalcService with ChangeNotifier {
@@ -55,7 +55,11 @@ class CalcService with ChangeNotifier {
   }
 
   double get mealsCountOfUser {
-    return mealsServ.membersMealsOfMonth
+    return totalMealsCountOfUser(userId);
+  }
+
+  double totalMealsCountOfUser(int userId) {
+    double count = mealsServ.membersMealsOfMonth
         .where((element) =>
             element.memberId == userId && element.date.isBefore(DateTime.now()))
         .fold(0, (prevValue, element) {
@@ -64,6 +68,10 @@ class CalcService with ChangeNotifier {
       if (element.dinner) prevValue++;
       return prevValue;
     });
+    if (count == null || count == 0 || count.isNaN) {
+      return 0;
+    }
+    return count;
   }
 
   double get depositTotal {

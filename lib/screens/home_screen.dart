@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess/screens/chat/chat_screen.dart';
-import 'package:mess/screens/close_month_screen.dart';
-import 'package:mess/screens/meals/meals_screen.dart';
-import 'package:mess/screens/tabs/expenses_tab.dart';
-import 'package:mess/screens/tabs/overview_tab.dart';
-import 'package:mess/screens/tabs/tasks_tab.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/services/mess_service.dart';
-import 'package:mess/widgets/app_drawer.dart';
+import 'package:messman/screens/chat/chat_screen.dart';
+import 'package:messman/screens/close_month_screen.dart';
+import 'package:messman/screens/meals/meals_screen.dart';
+import 'package:messman/screens/tabs/expenses_tab.dart';
+import 'package:messman/screens/tabs/overview_tab.dart';
+import 'package:messman/screens/tabs/tasks_tab.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/services/mess_service.dart';
+import 'package:messman/widgets/app_drawer.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -110,7 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: _isLoading ? Center(child: CircularProgressIndicator()) : _theView(),
+      body:
+          _isLoading ? Center(child: CircularProgressIndicator()) : _theView(),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: [

@@ -1,6 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:mess/widgets/user/users_currency.dart';
+import 'package:messman/widgets/user/users_currency.dart';
 
 class Amount extends StatelessWidget {
   final double amount;
@@ -11,10 +10,13 @@ class Amount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    final String roundedAmount = (amount == null || amount == 0 || amount.isNaN) ? '0.0' : amount.toStringAsFixed(2);
+    final String roundedAmount = (amount == null || amount == 0 || amount.isNaN)
+        ? '0.0'
+        : amount.toStringAsFixed(2);
     final String amountStr = roundedAmount.split('.')[0];
-    final String amountFraction = amount.truncateToDouble() == amount ? '' : '.'+roundedAmount.split('.')[1];
+    final String amountFraction = amount.truncateToDouble() == amount
+        ? ''
+        : '.' + roundedAmount.split('.')[1];
 
     return FittedBox(
       child: Row(

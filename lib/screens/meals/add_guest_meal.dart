@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/services/meals_service.dart';
-import 'package:mess/widgets/meal/meal_size_controller.dart';
-import 'package:mess/widgets/screen_loading.dart';
-import 'package:mess/widgets/user/member_selector.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/services/meals_service.dart';
+import 'package:messman/widgets/meal/meal_size_controller.dart';
+import 'package:messman/widgets/screen_loading.dart';
+import 'package:messman/widgets/user/member_selector.dart';
 import 'package:provider/provider.dart';
 
 class AddGuestMeal extends StatefulWidget {

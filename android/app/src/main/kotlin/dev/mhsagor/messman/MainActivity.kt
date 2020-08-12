@@ -1,4 +1,4 @@
-package com.mhsagor.mess
+package dev.mhsagor.messman
 
 import io.flutter.embedding.android.FlutterActivity
 

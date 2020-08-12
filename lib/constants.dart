@@ -1,6 +1,7 @@
+// const String baseUrl = 'https://mhsagor.site/api/';
 const String baseUrl = 'http://10.0.2.2:8000/api/';
 
-class Currency{
+class Currency {
   String name;
   String symbol;
   Currency(this.name, this.symbol);

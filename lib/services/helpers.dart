@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:mess/models/http_exception.dart';
-import 'package:mess/models/meal.dart';
-import 'package:mess/models/models.dart';
+import 'package:messman/models/http_exception.dart';
+import 'package:messman/models/meal.dart';
+import 'package:messman/models/models.dart';
 import 'package:http/http.dart' as http;
-import 'package:mess/services/auth_service.dart';
+import 'package:messman/services/auth_service.dart';
 
 int lastDayOfMonth(DateTime dateTime) {
   final now = dateTime ?? DateTime.now();
@@ -76,11 +76,12 @@ void showHttpSnackbarError(BuildContext context, error) {
   }
 }
 
-Future<void> handleHttpErrors(http.Response response, {Function logoutCallback}) async {
+Future<void> handleHttpErrors(http.Response response,
+    {Function logoutCallback}) async {
   final Map<String, dynamic> result = json.decode(response.body);
-  if(response.statusCode == 404){
+  if (response.statusCode == 404) {
     throw HttpException('Error: 404! Unknown action.');
-  }else if (response.statusCode == 401 &&
+  } else if (response.statusCode == 401 &&
       result['message'].toString().contains('Unauthenticated')) {
     // Unauthenticated
     if (logoutCallback != null) {
@@ -112,8 +113,22 @@ Future<void> handleHttpErrors(http.Response response, {Function logoutCallback})
   throw HttpException(finalMsg);
 }
 
-httpHeader(String token) => {
-      'Content-type': 'application/json',
+Map<String, String> httpHeader(String token, {bool hasFile = false}) => {
+      'Content-type': !hasFile ? 'application/json' : 'multipart/form-data',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     };
+
+String smartCount(double count) {
+  final String roundedAmount = (count == null || count == 0 || count.isNaN)
+      ? '0.0'
+      : count.toStringAsFixed(2);
+  final String amountStr = roundedAmount.split('.')[0];
+  final String amountFraction = count.truncateToDouble() == count
+      ? ''
+      : '.' + roundedAmount.split('.')[1];
+  if (amountFraction.isEmpty) {
+    return amountStr;
+  }
+  return count.toStringAsFixed(1);
+}

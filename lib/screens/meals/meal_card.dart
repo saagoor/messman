@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:mess/models/food.dart';
-import 'package:mess/models/meal.dart';
-import 'package:mess/screens/meals/set_meal_screen.dart';
-import 'package:mess/services/auth_service.dart';
+import 'package:messman/models/food.dart';
+import 'package:messman/models/meal.dart';
+import 'package:messman/screens/meals/set_meal_screen.dart';
+import 'package:messman/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class MealCard extends StatelessWidget {

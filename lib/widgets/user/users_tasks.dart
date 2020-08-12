@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess/models/task.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/members_service.dart';
-import 'package:mess/services/tasks_service.dart';
+import 'package:messman/models/task.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/members_service.dart';
+import 'package:messman/services/tasks_service.dart';
 import 'package:provider/provider.dart';
 
 class UsersTasks extends StatelessWidget {
@@ -74,7 +74,8 @@ class TaskItemCard extends StatelessWidget {
                     Text(DateFormat('E, MMM d').format(task.dateTime)),
                   ],
                 ),
-                subtitle: Text(Provider.of<MembersService>(context, listen: false)
+                subtitle: Text(
+                    Provider.of<MembersService>(context, listen: false)
                         .memberById(task.memberId)
                         .name),
               ),

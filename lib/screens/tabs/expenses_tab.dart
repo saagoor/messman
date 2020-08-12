@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mess/screens/add_expense_screen.dart';
-import 'package:mess/services/expenses_service.dart';
-import 'package:mess/widgets/expenses_list_view.dart';
-import 'package:mess/widgets/no_scaffold_fab.dart';
+import 'package:messman/screens/add_expense_screen.dart';
+import 'package:messman/services/expenses_service.dart';
+import 'package:messman/widgets/expenses_list_view.dart';
+import 'package:messman/widgets/no_scaffold_fab.dart';
 import 'package:provider/provider.dart';
 import '../../services/helpers.dart';
 
@@ -49,4 +49,3 @@ class _ExpensesTabState extends State<ExpensesTab> {
     );
   }
 }
-

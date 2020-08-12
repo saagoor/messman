@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mess/models/models.dart';
-import 'package:mess/screens/tabs/tasks_tab.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/deposits_service.dart';
-import 'package:mess/services/expenses_service.dart';
-import 'package:mess/services/tasks_service.dart';
-import 'package:mess/widgets/deposits_list_view.dart';
-import 'package:mess/widgets/expenses_list_view.dart';
-import 'package:mess/widgets/user/profile_card.dart';
+import 'package:messman/models/models.dart';
+import 'package:messman/screens/tabs/tasks_tab.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/deposits_service.dart';
+import 'package:messman/services/expenses_service.dart';
+import 'package:messman/services/tasks_service.dart';
+import 'package:messman/widgets/deposits_list_view.dart';
+import 'package:messman/widgets/expenses_list_view.dart';
+import 'package:messman/widgets/user/profile_card.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -48,8 +48,10 @@ class ProfileScreen extends StatelessWidget {
           ],
           body: TabBarView(
             children: [
-              DepositsListView(deposit.depositsByUser(user?.id),  reduceSize: 300),
-              ExpensesListView(expense.expensesByUser(user?.id), reduceSize: 300),
+              DepositsListView(deposit.depositsByUser(user?.id),
+                  reduceSize: 300),
+              ExpensesListView(expense.expensesByUser(user?.id),
+                  reduceSize: 300),
               TasksListView(task.usersTasks(userId: user?.id), reduceSize: 300),
             ],
           ),

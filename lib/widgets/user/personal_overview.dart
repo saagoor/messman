@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mess/services/calc_service.dart';
-import 'package:mess/widgets/amount.dart';
+import 'package:messman/services/calc_service.dart';
+import 'package:messman/widgets/amount.dart';
 import 'package:provider/provider.dart';
 
 class PersonalOverview extends StatelessWidget {
@@ -13,7 +13,7 @@ class PersonalOverview extends StatelessWidget {
     final calc = Provider.of<CalcService>(context);
 
     return Wrap(
-      spacing: 15,
+      spacing: 10,
       alignment: WrapAlignment.spaceBetween,
       children: <Widget>[
         OverviewCircle(

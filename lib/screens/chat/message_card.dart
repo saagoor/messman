@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess/models/message.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/members_service.dart';
-import 'package:mess/widgets/user/members_circle_avatar.dart';
+import 'package:messman/models/message.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/members_service.dart';
+import 'package:messman/widgets/user/members_circle_avatar.dart';
 import 'package:provider/provider.dart';
 
 class MessageCard extends StatelessWidget {
@@ -22,8 +22,8 @@ class MessageCard extends StatelessWidget {
       children: <Widget>[
         Row(
           mainAxisAlignment: (user?.id != message?.senderId)
-                  ? MainAxisAlignment.start
-                  : MainAxisAlignment.end,
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             if (user?.id != message?.senderId) ...[
@@ -51,12 +51,11 @@ class MessageCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color:
-                        user?.id == sender?.id ? Color.fromRGBO(31, 48, 87, 1) : Colors.white,
+                    color: user?.id == sender?.id
+                        ? Color.fromRGBO(31, 48, 87, 1)
+                        : Colors.white,
                   ),
-                  constraints: BoxConstraints(
-                    maxWidth: 280
-                  ),
+                  constraints: BoxConstraints(maxWidth: 280),
                   child: Text(
                     message.text ?? '',
                     style: TextStyle(

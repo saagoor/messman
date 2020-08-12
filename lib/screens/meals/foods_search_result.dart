@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mess/models/food.dart';
-import 'package:mess/services/foods_service.dart';
+import 'package:messman/models/food.dart';
+import 'package:messman/services/foods_service.dart';
+import 'package:messman/widgets/network_circle_avatar.dart';
 import 'package:provider/provider.dart';
 
 class FoodSearchResult extends StatelessWidget {
@@ -47,17 +48,7 @@ class FoodCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: SizedBox(
-        height: 60,
-        width: 60,
-        child: CircleAvatar(
-          backgroundImage: food.imageUrl != null ? NetworkImage(food.imageUrl) : AssetImage('assets/images/lunch.png'),
-          onBackgroundImageError: (wtf, trace) {
-            print('Image error');
-            return AssetImage('assets/images/lunch.png');
-          },
-        ),
-      ),
+      leading: NetworkCircleAvatar(imageUrl: food.imageUrl),
       title: Text(food.title, style: Theme.of(context).textTheme.headline6),
       subtitle: Text(food.category ?? 'Unspecified'),
       trailing: Card(

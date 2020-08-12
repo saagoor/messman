@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mess/screens/auth/profile_screen.dart';
-import 'package:mess/screens/deposits_screen.dart';
-import 'package:mess/screens/meals/meals_screen.dart';
-import 'package:mess/screens/members_screen.dart';
-import 'package:mess/screens/settings_screen.dart';
-import 'package:mess/services/auth_service.dart';
+import 'package:messman/screens/auth/profile_screen.dart';
+import 'package:messman/screens/deposits_screen.dart';
+import 'package:messman/screens/meals/meals_screen.dart';
+import 'package:messman/screens/members_screen.dart';
+import 'package:messman/screens/settings_screen.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/widgets/network_circle_avatar.dart';
 import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -22,14 +23,7 @@ class AppDrawer extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                CircleAvatar(
-                  // backgroundColor: Colors.white,
-                  radius: 30,
-                  backgroundImage: user.imageUrl != null
-                      ? NetworkImage(user.imageUrl)
-                      : AssetImage('assets/images/user-placeholder4.png'),
-
-                ),
+                NetworkCircleAvatar(imageUrl: user.imageUrl),
                 SizedBox(height: 12),
                 if (user.name != null && user.name.isNotEmpty) ...[
                   Text(

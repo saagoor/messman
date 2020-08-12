@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:messman/widgets/network_circle_avatar.dart';
 
 class MembersCircleAvatar extends StatelessWidget {
   final String imageUrl;
@@ -25,26 +27,11 @@ class MembersCircleAvatar extends StatelessWidget {
     ];
     final rand = Random();
 
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: colors[rand.nextInt(colors.length)],
-      child: ClipOval(
-        child: Image.network(
-          imageUrl ?? '',
-          errorBuilder: (ctx, child, trace) {
-            return Text(
-              firstChar.toUpperCase(),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: radius / 2 < 15 ? 15 : radius / 2,
-              ),
-            );
-          },
-          height: 58,
-          width: 58,
-          fit: BoxFit.cover,
-        ),
-      ),
+    return NetworkCircleAvatar(
+      imageUrl: imageUrl,
+      size: 45,
+      firstChar: firstChar,
+      color: colors[rand.nextInt(colors.length)],
     );
   }
 }
@@ -63,27 +50,27 @@ class MembersSquareAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      clipBehavior: Clip.antiAlias,
       height: radius,
       width: radius,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Image.network(
-        imageUrl ?? '',
-        errorBuilder: (ctx, child, trace) {
-          return Center(
-            child: Text(
-              firstChar.toUpperCase(),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: radius / 3 < 12 ? 12 : radius / 3,
-              ),
-            ),
-          );
-        },
-        height: 58,
-        width: 58,
+      child: CachedNetworkImage(
+        imageUrl: imageUrl ?? '',
+        placeholder: (context, url) => Image.asset('assets/icons/icon.png'),
+        errorWidget: (context, url, error) => firstChar != null
+            ? Center(
+                child: Text(
+                  firstChar.toUpperCase(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: radius / 2.5 < 15 ? 15 : radius / 2.5,
+                  ),
+                ),
+              )
+            : Icon(Icons.error),
         fit: BoxFit.cover,
       ),
     );

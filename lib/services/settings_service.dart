@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:mess/services/auth_service.dart';
+import 'package:messman/services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsService with ChangeNotifier {
@@ -10,14 +10,14 @@ class SettingsService with ChangeNotifier {
     return await SharedPreferences.getInstance();
   }
 
-  Future<bool> isAppTourComplete() async{
+  Future<bool> isAppTourComplete() async {
     final _prefs = await prefs();
     return _prefs.getBool('appTourComplete') ?? false;
   }
 
-  Future<bool> completeAppTour() async{
+  Future<bool> completeAppTour() async {
     final _prefs = await prefs();
-    return _prefs.setBool('appTourComplete', true).whenComplete((){
+    return _prefs.setBool('appTourComplete', true).whenComplete(() {
       notifyListeners();
     });
   }

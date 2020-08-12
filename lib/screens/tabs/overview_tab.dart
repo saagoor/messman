@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess/services/calc_service.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/services/mess_service.dart';
-import 'package:mess/widgets/meal/todays_meals.dart';
-import 'package:mess/widgets/mess_overview.dart';
-import 'package:mess/widgets/section_title.dart';
-import 'package:mess/widgets/user/personal_overview.dart';
-import 'package:mess/widgets/user/users_tasks.dart';
+import 'package:messman/services/calc_service.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/services/mess_service.dart';
+import 'package:messman/widgets/meal/todays_meals.dart';
+import 'package:messman/widgets/mess_overview.dart';
+import 'package:messman/widgets/section_title.dart';
+import 'package:messman/widgets/user/personal_overview.dart';
+import 'package:messman/widgets/user/users_tasks.dart';
 import 'package:provider/provider.dart';
 
 class OverviewTab extends StatelessWidget {

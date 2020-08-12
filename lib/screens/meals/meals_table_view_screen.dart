@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess/models/models.dart';
-import 'package:mess/services/helpers.dart';
+import 'package:messman/models/models.dart';
+import 'package:messman/services/calc_service.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/services/meals_service.dart';
+import 'package:messman/services/mess_service.dart';
 import 'package:provider/provider.dart';
-import 'package:mess/services/members_service.dart';
+import 'package:messman/services/members_service.dart';
 
 class MealsTableViewScreen extends StatefulWidget {
   static const routeName = '/meals-table';
@@ -14,6 +17,34 @@ class MealsTableViewScreen extends StatefulWidget {
 
 class _MealsTableViewScreenState extends State<MealsTableViewScreen> {
   DateTime dateTime = DateTime.now();
+  double _tableHeadHeight = 0;
+  double _tableHeadOpacity = 0;
+  ScrollController _scrollController = new ScrollController();
+
+  @override
+  void initState() {
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 100 && _tableHeadOpacity == 0) {
+        setState(() {
+          _tableHeadHeight = 42;
+          _tableHeadOpacity = 1;
+        });
+      } else if (_scrollController.offset < 80 && _tableHeadOpacity != 0) {
+        setState(() {
+          _tableHeadHeight = 0;
+          _tableHeadOpacity = 0;
+        });
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final membersData = Provider.of<MembersService>(context);
@@ -31,104 +62,198 @@ class _MealsTableViewScreenState extends State<MealsTableViewScreen> {
             ),
           ],
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.more_horiz),
-            onPressed: () async {
-              DateTime selectedDate = await showDatePicker(
-                context: context,
-                initialDate: dateTime,
-                firstDate: DateTime.now().subtract(Duration(days: 365)),
-                lastDate: DateTime.now().add(Duration(days: 365)),
-              );
-              if (selectedDate == null) return;
-              setState(() {
-                dateTime = selectedDate;
-              });
-            },
-          ),
-        ],
+        // actions: <Widget>[
+        //   IconButton(
+        //     icon: Icon(Icons.more_horiz),
+        //     onPressed: () async {
+        //       // DateTime selectedDate = await showDatePicker(
+        //       //   context: context,
+        //       //   initialDate: dateTime,
+        //       //   firstDate: DateTime.now().subtract(Duration(days: 365)),
+        //       //   lastDate: DateTime.now().add(Duration(days: 365)),
+        //       // );
+        //       // if (selectedDate == null) return;
+        //       // setState(() {
+        //       //   dateTime = selectedDate;
+        //       // });
+        //     },
+        //   ),
+        // ],
       ),
-      body: ListView(
-        children: <Widget>[
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              // dividerThickness: 1,
-              columns: [
-                DataColumn(
-                    label: Text('Day',
-                        style: Theme.of(context).textTheme.bodyText1),
-                    numeric: true),
-                ...members
-                    .map((member) => DataColumn(
-                        label: Text(member.name,
-                            style: Theme.of(context).textTheme.bodyText1)))
-                    .toList(),
-                DataColumn(
-                    label: Text('Day',
-                        style: Theme.of(context).textTheme.bodyText1),
-                    numeric: true),
-              ],
-              rows: getRows(members),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Column(
+          children: <Widget>[
+            AnimatedOpacity(
+              opacity: _tableHeadOpacity,
+              duration: Duration(milliseconds: 500),
+              curve: Curves.fastOutSlowIn,
+              child: AnimatedContainer(
+                color: Theme.of(context).primaryColorLight,
+                height: _tableHeadHeight,
+                curve: Curves.fastOutSlowIn,
+                duration: Duration(milliseconds: 500),
+                child: Table(
+                  defaultColumnWidth: IntrinsicColumnWidth(),
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: [getTableHeads(members)],
+                ),
+              ),
             ),
-          ),
-        ],
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: ChangeNotifierProvider.value(
+                  value: CalcService(context),
+                  child: Table(
+                    defaultColumnWidth: IntrinsicColumnWidth(),
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: [
+                      getTableHeads(members),
+                      ...getRows(members),
+                      TableRow(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(
+                              color: Colors.grey.withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 12.0, 0, 12),
+                            child: Text('Total:'),
+                          ),
+                          ...members
+                              .map((member) => Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child:
+                                        MembersMealsCount(memberId: member.id),
+                                  ))
+                              .toList(),
+                          if (members.length > 3)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(12, 12.0, 0, 12),
+                              child: Text(''),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
+  getTableHeads(List<User> members) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            'Day',
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
+        ),
+        ...members
+            .map((member) => Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    member.name,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ))
+            .toList(),
+        if (members.length > 3)
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Text(
+              'Day',
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          ),
+      ],
+    );
+  }
+
   getRows(List<User> members) {
-    List<DataRow> rows = [];
+    List<TableRow> rows = [];
     for (var i = 1; i <= lastDayOfMonth(null); i++) {
       rows.add(
-        DataRow(cells: [
-          DataCell(Text('$i')),
-          ...members.map((member) => DataCell(MealsCell())),
-          DataCell(Text('$i')),
-        ]),
+        TableRow(
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: Colors.grey.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text('$i', textAlign: TextAlign.center),
+            ),
+            ...members.map(
+              (member) => Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: MealsCell(day: i, memberId: member.id),
+              ),
+            ),
+            if (members.length > 3)
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text('$i'),
+              ),
+          ],
+        ),
       );
     }
     return rows;
   }
-
 }
 
 class MealsCell extends StatelessWidget {
-  final bool breakfast;
-  final bool lunch;
-  final bool dinner;
-
-  MealsCell({this.breakfast = false, this.lunch = true, this.dinner = true});
+  final int day;
+  final int memberId;
+  MealsCell({this.day, this.memberId});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Icon(
-          breakfast ? Icons.check_circle_outline : Icons.cancel,
-          size: 18,
-          color: breakfast
-              ? Theme.of(context).accentColor
-              : Theme.of(context).iconTheme.color,
-        ),
-        SizedBox(width: 4),
-        Icon(
-          lunch ? Icons.check_circle_outline : Icons.cancel,
-          size: 18,
-          color: lunch
-              ? Theme.of(context).accentColor
-              : Theme.of(context).errorColor,
-        ),
-        SizedBox(width: 4),
-        Icon(
-          dinner ? Icons.check_circle_outline : Icons.cancel,
-          size: 18,
-          color: dinner
-              ? Theme.of(context).accentColor
-              : Theme.of(context).errorColor,
-        ),
-      ],
+    final messService = Provider.of<MessService>(context);
+    final mealsService = Provider.of<MealsService>(context);
+    double mealCount = mealsService
+        .membersMeals(DateTime(DateTime.now().year, DateTime.now().month, day))
+        .fold(0, (prevValue, item) {
+      if (item.memberId == memberId) {
+        if (item.breakfast) prevValue += messService.mess?.breakfastSize ?? 0;
+        if (item.lunch) prevValue++;
+        if (item.dinner) prevValue++;
+      }
+      return prevValue;
+    });
+    return Text('${smartCount(mealCount)}', textAlign: TextAlign.center);
+  }
+}
+
+class MembersMealsCount extends StatelessWidget {
+  final int memberId;
+  const MembersMealsCount({Key key, @required this.memberId}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final calcService = Provider.of<CalcService>(context);
+    final count = calcService.totalMealsCountOfUser(memberId);
+    return Text(
+      '${smartCount(count)}',
+      style: TextStyle(fontWeight: FontWeight.bold),
+      textAlign: TextAlign.center,
     );
   }
 }

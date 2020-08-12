@@ -1,4 +1,4 @@
-name: mess
+name: messman
 description: Mess management application.
 
 # The following line prevents the package from being accidentally published to
@@ -30,6 +30,7 @@ dependencies:
   image_picker: ^0.6.6+4
   image_cropper: ^1.2.2
   google_sign_in: ^4.5.1
+  cached_network_image: ^2.2.0+1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -43,6 +44,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^1.10.0
   json_serializable: ^3.3.0
+  flutter_launcher_icons: ^0.7.5
   
 
 # For information on the generic Dart part of this file, see the
@@ -80,3 +82,8 @@ flutter:
           weight: 700
         - asset: assets/fonts/Product-Sans-Italic.ttf
           style: italic
+
+flutter_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/icons/icon.png"

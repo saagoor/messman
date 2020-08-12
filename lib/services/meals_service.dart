@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:mess/constants.dart';
-import 'package:mess/models/http_exception.dart';
-import 'package:mess/models/meal.dart';
-import 'package:mess/services/helpers.dart';
+import 'package:messman/constants.dart';
+import 'package:messman/models/http_exception.dart';
+import 'package:messman/models/meal.dart';
+import 'package:messman/services/helpers.dart';
 import 'package:http/http.dart' as http;
 
 class MealsService with ChangeNotifier {
@@ -150,8 +150,14 @@ class MealsService with ChangeNotifier {
       if (response.statusCode == 200) {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
+          if (!monthsMeals.containsKey(DateFormat('yyyy-MM-dd').format(date))) {
+            // Jodi ei diner kono meal na thake tahole age initialize kore nitese
+            monthsMeals[DateFormat('yyyy-MM-dd').format(date)] = new DaysMeal();
+          }
           result['data'].forEach((item) {
-            monthsMeals[date].membersMeals.add(MembersMeal.fromJson(item));
+            monthsMeals[DateFormat('yyyy-MM-dd').format(date)]
+                .membersMeals
+                .add(MembersMeal.fromJson(item));
           });
           notifyListeners();
         } else {
@@ -161,6 +167,7 @@ class MealsService with ChangeNotifier {
         return handleHttpErrors(response);
       }
     } catch (error) {
+      print(error);
       throw error;
     }
   }

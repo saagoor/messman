@@ -15,10 +15,11 @@ class ImageCapture extends StatefulWidget {
 
 class _ImageCaptureState extends State<ImageCapture> {
   File _imageFile;
+  final picker = ImagePicker();
 
   Future<void> _pickImage(ImageSource source) async {
-    File selected = await ImagePicker.pickImage(source: source);
-    if (selected != null) _cropImage(selected);
+    final selected = await picker.getImage(source: source);
+    if (selected != null) _cropImage(File(selected.path));
   }
 
   Future<void> _cropImage(File selectedImage) async {
@@ -50,7 +51,7 @@ class _ImageCaptureState extends State<ImageCapture> {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        if (_imageFile != null)
+        if (_imageFile != null && _imageFile.path != null)
           ClipOval(
             child: SizedBox(
               height: 100,

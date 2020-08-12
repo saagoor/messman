@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mess/services/calc_service.dart';
-import 'package:mess/widgets/amount.dart';
+import 'package:messman/services/calc_service.dart';
+import 'package:messman/widgets/amount.dart';
 import 'package:provider/provider.dart';
 
 class MessOverview extends StatelessWidget {

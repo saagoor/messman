@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mess/models/http_exception.dart';
-import 'package:mess/services/auth_service.dart';
+import 'package:messman/models/http_exception.dart';
+import 'package:messman/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -80,7 +80,7 @@ class _SigninScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     _passwordController.text = _authData['password'];
     _auth = Provider.of<AuthService>(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,

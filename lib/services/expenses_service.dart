@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
-import 'package:mess/constants.dart';
-import 'package:mess/models/http_exception.dart';
-import 'package:mess/models/models.dart';
+import 'package:messman/constants.dart';
+import 'package:messman/models/http_exception.dart';
+import 'package:messman/models/models.dart';
 import 'package:http/http.dart' as http;
-import 'package:mess/services/helpers.dart';
+import 'package:messman/services/helpers.dart';
 
 class ExpensesService with ChangeNotifier {
   final String token;
@@ -113,19 +113,19 @@ class ExpensesService with ChangeNotifier {
     return _items.where((element) => element.type == 'shopping').toList();
   }
 
-  List<Expense> get utilities{
+  List<Expense> get utilities {
     return _items.where((element) => element.type == 'utility').toList();
   }
 
-  int get shoppingsTotal{
+  int get shoppingsTotal {
     return shoppings.fold(0, (prevVal, element) => prevVal + element.amount);
   }
 
-  int get utilitiesTotal{
+  int get utilitiesTotal {
     return utilities.fold(0, (prevVal, element) => prevVal + element.amount);
   }
 
-  int get total{
+  int get total {
     return _items.fold(0, (prevVal, element) => prevVal + element.amount);
   }
 }

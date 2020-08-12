@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
-import 'package:mess/constants.dart';
-import 'package:mess/models/http_exception.dart';
-import 'package:mess/models/meal.dart';
-import 'package:mess/models/models.dart';
-import 'package:mess/models/task.dart';
-import 'package:mess/services/auth_service.dart';
+import 'package:messman/constants.dart';
+import 'package:messman/models/http_exception.dart';
+import 'package:messman/models/meal.dart';
+import 'package:messman/models/models.dart';
+import 'package:messman/models/task.dart';
+import 'package:messman/services/auth_service.dart';
 import 'package:http/http.dart' as http;
-import 'package:mess/services/helpers.dart';
+import 'package:messman/services/helpers.dart';
 
 class MessService with ChangeNotifier {
   final AuthService auth;
@@ -147,7 +147,7 @@ class MessService with ChangeNotifier {
       if (response.statusCode == 200) {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
-          _mess = Mess.fromJson(result['data']);
+          setAllData(result['data']);
           return _mess?.id;
         }
       } else {
@@ -158,6 +158,31 @@ class MessService with ChangeNotifier {
         }
       }
       return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  Future<void> deleteMess(int messId) async {
+    try {
+      final response = await http.delete(
+        baseUrl + 'mess/$messId',
+        headers: httpHeader(auth.token),
+      );
+      if (response.statusCode == 200) {
+        final result = json.decode(response.body) as Map<String, dynamic>;
+        if (result != null && result['data'] != null) {
+          // setAllData(result['data']);
+          _mess = null;
+          auth.logout();
+        }
+      } else {
+        try {
+          await handleHttpErrors(response);
+        } catch (error) {
+          throw error;
+        }
+      }
     } catch (error) {
       throw error;
     }

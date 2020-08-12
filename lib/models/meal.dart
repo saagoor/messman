@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mess/constants.dart';
+import 'package:messman/constants.dart';
 import 'package:http/http.dart' as http;
-import 'package:mess/models/http_exception.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/models/food.dart';
+import 'package:messman/models/http_exception.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/models/food.dart';
 
 part 'meal.g.dart';
 

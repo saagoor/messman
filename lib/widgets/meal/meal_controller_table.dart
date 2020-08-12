@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mess/models/meal.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/services/meals_service.dart';
-import 'package:mess/services/members_service.dart';
+import 'package:messman/models/meal.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/services/meals_service.dart';
+import 'package:messman/services/members_service.dart';
+import 'package:messman/services/mess_service.dart';
 import 'package:provider/provider.dart';
 
 class MealControllerTable extends StatefulWidget {
@@ -18,6 +19,7 @@ class _MealControllerTableState extends State<MealControllerTable> {
   MembersService _membersData;
   AuthService _authData;
   MealsService _mealsData;
+  MessService _messData;
   bool _firstInit = true;
 
   bool _breakfastOn = false;
@@ -38,6 +40,7 @@ class _MealControllerTableState extends State<MealControllerTable> {
 
   @override
   Widget build(BuildContext context) {
+    _messData = Provider.of<MessService>(context, listen: false);
     _membersData = Provider.of<MembersService>(context, listen: false);
     _authData = Provider.of<AuthService>(context);
     _mealsData = Provider.of<MealsService>(context);
@@ -45,6 +48,10 @@ class _MealControllerTableState extends State<MealControllerTable> {
     if (_firstInit) {
       initMealsControll();
       _firstInit = false;
+    }
+
+    if (_messData.mess == null) {
+      return Text('');
     }
 
     return Table(
@@ -56,25 +63,29 @@ class _MealControllerTableState extends State<MealControllerTable> {
       children: [
         TableRow(children: [
           Text('Member'),
-          Text('Breakfast', textAlign: TextAlign.center),
+          if (_messData.mess.breakfastSize <= 0) Text(''),
+          if (_messData.mess.breakfastSize > 0)
+            Text('Breakfast', textAlign: TextAlign.center),
           Text('Lunch', textAlign: TextAlign.center),
           Text('Dinner', textAlign: TextAlign.center),
         ]),
         TableRow(
           children: [
             Text('Whole Mess'),
-            Checkbox(
-              value: _breakfastOn,
-              onChanged: (_) {
-                if (_authData.user.isManager) {
-                  bool value =
-                      _mealsData.toggleWholeMessBreakfast(widget.dateTime);
-                  setState(() {
-                    _breakfastOn = value;
-                  });
-                }
-              },
-            ),
+            if (_messData.mess.breakfastSize <= 0) Text(''),
+            if (_messData.mess.breakfastSize > 0)
+              Checkbox(
+                value: _breakfastOn,
+                onChanged: (_) {
+                  if (_authData.user.isManager) {
+                    bool value =
+                        _mealsData.toggleWholeMessBreakfast(widget.dateTime);
+                    setState(() {
+                      _breakfastOn = value;
+                    });
+                  }
+                },
+              ),
             Checkbox(
               value: _lunchOn,
               onChanged: (_) {
@@ -101,9 +112,9 @@ class _MealControllerTableState extends State<MealControllerTable> {
             ),
           ],
         ),
-        ..._mealsData.membersMeals(widget.dateTime).map((theMeal) {
+        ..._mealsData?.membersMeals(widget.dateTime)?.map((theMeal) {
           return _getRow(theMeal);
-        }).toList(),
+        })?.toList(),
       ],
     );
   }
@@ -119,12 +130,14 @@ class _MealControllerTableState extends State<MealControllerTable> {
     return TableRow(
       children: [
         Text(member.name + (guestNo > 0 ? '\'s Guest $guestNo' : '')),
-        ChangeNotifierProvider<MembersMeal>.value(
-          value: meal,
-          child: Consumer<MembersMeal>(
-            builder: (ctx, meal, child) => MealsCheckbox(meal, 'breakfast'),
+        if (_messData.mess.breakfastSize <= 0) Text(''),
+        if (_messData.mess.breakfastSize > 0)
+          ChangeNotifierProvider<MembersMeal>.value(
+            value: meal,
+            child: Consumer<MembersMeal>(
+              builder: (ctx, meal, child) => MealsCheckbox(meal, 'breakfast'),
+            ),
           ),
-        ),
         ChangeNotifierProvider<MembersMeal>.value(
           value: meal,
           child: Consumer<MembersMeal>(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mess/screens/mess/create_mess_screen.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/services/mess_service.dart';
-import 'package:mess/widgets/screen_loading.dart';
+import 'package:messman/screens/mess/create_mess_screen.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/services/mess_service.dart';
+import 'package:messman/widgets/screen_loading.dart';
 import 'package:provider/provider.dart';
 
 class JoinMessScreen extends StatefulWidget {
@@ -30,10 +30,10 @@ class _JoinMessScreenState extends State<JoinMessScreen> {
     });
     try {
       final int messId = await _messService.joinMess(joinCode);
-      if(messId != null && messId > 0){
+      if (messId != null && messId > 0) {
         Provider.of<AuthService>(context, listen: false).messId = messId;
         return;
-      }else{
+      } else {
         showHttpError(context, 'Received mess ID is invalid!');
       }
     } catch (error) {

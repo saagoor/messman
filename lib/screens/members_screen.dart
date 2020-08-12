@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mess/models/models.dart';
-import 'package:mess/screens/auth/profile_screen.dart';
-import 'package:mess/screens/save_member_screen.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/services/members_service.dart';
-import 'package:mess/widgets/list_view_empty.dart';
-import 'package:mess/widgets/user/members_circle_avatar.dart';
+import 'package:messman/models/models.dart';
+import 'package:messman/screens/auth/profile_screen.dart';
+import 'package:messman/screens/save_member_screen.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/services/members_service.dart';
+import 'package:messman/widgets/list_view_empty.dart';
+import 'package:messman/widgets/user/members_circle_avatar.dart';
 import 'package:provider/provider.dart';
 
 class MembersScreen extends StatefulWidget {
@@ -31,12 +31,7 @@ class _MembersScreenState extends State<MembersScreen> {
       appBar: AppBar(
         title: Text('Mess Members'),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed(SaveMemberScreen.routeName);
-        },
-        child: Icon(Icons.person_add),
-      ),
+      floatingActionButton: AddMemberButton(),
       body: RefreshIndicator(
         child: membersService.items.length <= 0
             ? ListViewEmpty(text: 'Could not load members!')
@@ -52,6 +47,30 @@ class _MembersScreenState extends State<MembersScreen> {
               ),
         onRefresh: _loadMembers,
       ),
+    );
+  }
+}
+
+class AddMemberButton extends StatelessWidget {
+  const AddMemberButton({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () async {
+        final hasAdded =
+            await Navigator.of(context).pushNamed(SaveMemberScreen.routeName);
+        if (hasAdded != null && hasAdded == true) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Member has been added successfully.'),
+            ),
+          );
+        }
+      },
+      child: Icon(Icons.person_add),
     );
   }
 }
@@ -84,6 +103,19 @@ class MemberListItem extends StatelessWidget {
               value: MemberActions.Remove,
             ),
           ],
+          onSelected: (item) {
+            if (item == MemberActions.Remove) {
+              Provider.of<MembersService>(context, listen: false)
+                  .removeMember(member.id)
+                  .then((value) {
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Member has been removed.'),
+                  ),
+                );
+              });
+            }
+          },
         ),
         contentPadding: EdgeInsets.zero,
         onTap: () {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mess/models/models.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/expenses_service.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/services/mess_service.dart';
-import 'package:mess/widgets/input_date_picker.dart';
-import 'package:mess/widgets/user/member_selector.dart';
+import 'package:messman/models/models.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/expenses_service.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/services/mess_service.dart';
+import 'package:messman/widgets/input_date_picker.dart';
+import 'package:messman/widgets/user/member_selector.dart';
 import 'package:provider/provider.dart';
 
 class AddExpenseScreen extends StatefulWidget {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mess/constants.dart';
-import 'package:mess/models/models.dart';
-import 'package:mess/services/auth_service.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/services/mess_service.dart';
-import 'package:mess/widgets/meal/meal_size_controller.dart';
-import 'package:mess/widgets/screen_loading.dart';
+import 'package:messman/constants.dart';
+import 'package:messman/models/models.dart';
+import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/services/mess_service.dart';
+import 'package:messman/widgets/meal/meal_size_controller.dart';
+import 'package:messman/widgets/screen_loading.dart';
 import 'package:provider/provider.dart';
 
 class CreateMessScreen extends StatefulWidget {
@@ -34,16 +34,19 @@ class _CreateMessScreenState extends State<CreateMessScreen> {
           .createMess(_mess);
       if (messId != null && messId > 0) {
         Provider.of<AuthService>(context, listen: false).messId = messId;
+        if (context != null) {
+          Navigator.of(context).pushReplacementNamed('/');
+        }
         return;
       } else {
         showHttpError(context, 'Received mess ID is invalid!');
       }
     } catch (error) {
-      setState(() {
-        _isLoading = false;
-      });
       showHttpError(context, error);
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -86,7 +89,7 @@ class _CreateMessScreenState extends State<CreateMessScreen> {
                     }
                     return null;
                   },
-                  onSaved: (val) => _mess.location,
+                  onSaved: (val) => _mess.location = val,
                 ),
                 SizedBox(height: 20),
                 DropdownButtonFormField<String>(

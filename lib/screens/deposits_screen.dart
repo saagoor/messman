@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mess/screens/add_deposit_screen.dart';
-import 'package:mess/services/deposits_service.dart';
-import 'package:mess/services/helpers.dart';
-import 'package:mess/widgets/deposits_list_view.dart';
+import 'package:messman/screens/add_deposit_screen.dart';
+import 'package:messman/services/deposits_service.dart';
+import 'package:messman/services/helpers.dart';
+import 'package:messman/widgets/deposits_list_view.dart';
 import 'package:provider/provider.dart';
 
 class DepositsScreen extends StatelessWidget {

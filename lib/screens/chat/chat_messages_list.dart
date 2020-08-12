@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mess/models/message.dart';
-import 'package:mess/screens/chat/message_card.dart';
+import 'package:messman/models/message.dart';
+import 'package:messman/screens/chat/message_card.dart';
 
 class ChatMessagesList extends StatelessWidget {
   final ScrollController controller;
@@ -14,7 +14,7 @@ class ChatMessagesList extends StatelessWidget {
         Message(
           id: i,
           text:
-              '${i % 2 == 0 ? 'Lorem Ipsum ' : 'Dilli wali girlfriend'}I dont need no money $i killa tera addictude.',
+              '${i % 2 == 0 ? 'Lorem Ipsum ' : 'Dolar sit mmet'} adipisicing elit. Asperiores, reiciendis $i ',
           senderId: (i / 10).round(),
           sentAt: DateTime.now(),
         ),
@@ -43,5 +43,4 @@ class ChatMessagesList extends StatelessWidget {
       },
     );
   }
-  
 }

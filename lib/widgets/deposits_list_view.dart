@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess/models/models.dart';
-import 'package:mess/services/members_service.dart';
-import 'package:mess/widgets/amount.dart';
-import 'package:mess/widgets/list_view_empty.dart';
+import 'package:messman/models/models.dart';
+import 'package:messman/services/members_service.dart';
+import 'package:messman/widgets/amount.dart';
+import 'package:messman/widgets/list_view_empty.dart';
 import 'package:provider/provider.dart';
 
 class DepositsListView extends StatelessWidget {
@@ -46,10 +46,8 @@ class DepositsListCard extends StatelessWidget {
             radius: 30,
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Amount(
-                deposit.amount.toDouble(),
-                fontWeight: FontWeight.bold
-              ),
+              child: Amount(deposit.amount.toDouble(),
+                  fontWeight: FontWeight.bold),
             ),
           ),
           title: Text(member.name ?? 'MessMan User'),
