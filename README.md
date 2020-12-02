@@ -4,7 +4,7 @@ MessMan is a mobile application for managing bechelor mess.
 
 ## Basic Info
 
-This is a flutter project, it's backend is developed by Laravel.
+This is a flutter project, it's backend is developed by Laravel. The backend is stored in a private repository for security perpose, if you want to check the backed project [DM me on messenger](https://web.facebook.com/messages/t/mhsaagoor) or email me at mhsagor91@gmail.com.
 
 ## Prototype
 
