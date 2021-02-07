@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:messman/models/http_exception.dart';
 import 'package:messman/models/meal.dart';
-import 'package:messman/models/transaction.dart';
 import 'package:http/http.dart' as http;
 import 'package:messman/models/user.dart';
 import 'package:messman/services/auth_service.dart';

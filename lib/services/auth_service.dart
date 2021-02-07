@@ -7,7 +7,6 @@ import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:messman/constants.dart';
 import 'package:messman/models/http_exception.dart';
-import 'package:messman/models/transaction.dart';
 import 'package:messman/models/user.dart';
 import 'package:messman/services/helpers.dart';
 import 'package:shared_preferences/shared_preferences.dart';

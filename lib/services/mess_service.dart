@@ -8,7 +8,6 @@ import 'package:messman/models/expense.dart';
 import 'package:messman/models/http_exception.dart';
 import 'package:messman/models/meal.dart';
 import 'package:messman/models/mess.dart';
-import 'package:messman/models/transaction.dart';
 import 'package:messman/models/task.dart';
 import 'package:messman/models/user.dart';
 import 'package:messman/services/auth_service.dart';

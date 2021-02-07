@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:messman/models/transaction.dart';
 import 'package:messman/models/user.dart';
 import 'package:messman/screens/auth/edit_profile_screen.dart';
 import 'package:messman/services/auth_service.dart';

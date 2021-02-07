@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:messman/constants.dart';
 import 'package:messman/models/expense.dart';
 import 'package:messman/models/http_exception.dart';
-import 'package:messman/models/transaction.dart';
 import 'package:http/http.dart' as http;
 import 'package:messman/services/helpers.dart';
 

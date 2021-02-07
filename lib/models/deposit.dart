@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:messman/models/transaction.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'deposit.g.dart';
