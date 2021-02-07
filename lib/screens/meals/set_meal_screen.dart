@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:messman/screens/meals/foods_search_result.dart';
 import 'package:messman/services/foods_service.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 import 'package:provider/provider.dart';
 
 class SetMealScreen extends StatefulWidget {

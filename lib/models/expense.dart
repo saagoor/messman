@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:messman/includes/dialogs.dart';
 import 'package:messman/models/transaction.dart';
 import 'package:messman/services/expenses_service.dart';
 import 'package:provider/provider.dart';
@@ -34,46 +35,14 @@ class Expense extends Transaction {
 
   Map<String, dynamic> toJson() => _$ExpenseToJson(this);
 
-  void delete(BuildContext context) async {
-    bool confirmDelete = await showDialog(
+  void delete(BuildContext context) {
+    showDeleteDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        actionsPadding: EdgeInsets.only(right: 10),
-        title: Text('Delete Expense!'),
-        content: Text('Do you want to delete this expense?'),
-        actions: <Widget>[
-          FlatButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: Text('Cancel'),
-          ),
-          FlatButton(
-            color: Theme.of(context).errorColor,
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: Text('Delete'),
-          )
-        ],
-      ),
+      deleteMethod: () =>
+          Provider.of<ExpensesService>(context, listen: false).delete(super.id),
+      title: 'Delete Expense!',
+      content: 'Are you sure you want to delete this expense?',
+      successMessage: 'Expense deleted successfully!',
     );
-    if (confirmDelete) {
-      Provider.of<ExpensesService>(context, listen: false)
-          .delete(super.id)
-          .then((value) {
-        if (context != null && value == true) {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(content: Text('Expense deleted successfully!')),
-          );
-        }
-      }).catchError((error) {
-        if (context != null) {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(content: Text(error.toString())),
-          );
-        }
-      });
-    }
   }
 }

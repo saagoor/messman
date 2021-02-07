@@ -3,7 +3,7 @@ import 'package:messman/constants.dart';
 import 'package:messman/models/http_exception.dart';
 import 'package:messman/models/mess.dart';
 import 'package:messman/services/auth_service.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 import 'package:messman/services/mess_service.dart';
 import 'package:messman/widgets/meal/meal_size_controller.dart';
 import 'package:messman/widgets/screen_loading.dart';

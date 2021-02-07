@@ -8,7 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:messman/constants.dart';
 import 'package:messman/models/http_exception.dart';
 import 'package:messman/models/user.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -203,7 +203,6 @@ class AuthService with ChangeNotifier {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
           this.user = User.fromJson(result['data']);
-          notifyListeners();
         } else {
           throw HttpException(
               'Something went wrong, could not update your profile.');

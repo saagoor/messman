@@ -6,7 +6,7 @@ import 'package:messman/models/food.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:messman/models/http_exception.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 
 class FoodsService with ChangeNotifier {
   final String token;

@@ -6,7 +6,7 @@ import 'package:messman/screens/meals/meals_screen.dart';
 import 'package:messman/screens/tabs/expenses_tab.dart';
 import 'package:messman/screens/tabs/overview_tab.dart';
 import 'package:messman/screens/tabs/tasks_tab.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 import 'package:messman/services/mess_service.dart';
 import 'package:messman/widgets/app_drawer.dart';
 import 'package:provider/provider.dart';

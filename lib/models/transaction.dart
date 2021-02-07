@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'transaction.g.dart';
 
@@ -20,4 +21,8 @@ class Transaction {
       _$TransactionFromJson(json);
 
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
+
+  void delete(BuildContext context) {
+    print('Executing from parent transaction class');
+  }
 }

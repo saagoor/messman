@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:messman/services/auth_service.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 import 'package:messman/services/meals_service.dart';
 import 'package:messman/widgets/meal/meal_size_controller.dart';
 import 'package:messman/widgets/screen_loading.dart';

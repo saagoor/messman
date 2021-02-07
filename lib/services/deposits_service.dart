@@ -6,7 +6,7 @@ import 'package:messman/constants.dart';
 import 'package:messman/models/deposit.dart';
 import 'package:messman/models/expense.dart';
 import 'package:messman/models/transaction.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 import 'package:http/http.dart' as http;
 
 class DepositsService with ChangeNotifier {
@@ -27,8 +27,11 @@ class DepositsService with ChangeNotifier {
   List<Deposit> _items = [];
 
   List<Transaction> get items {
-    if (depositedExpenses != null && depositedExpenses.length > 0)
-      return [..._items, ...depositedExpenses];
+    if (depositedExpenses != null && depositedExpenses.length > 0) {
+      final trans = [..._items, ...depositedExpenses];
+      trans.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+      return trans;
+    }
     return [..._items];
   }
 
@@ -107,7 +110,7 @@ class DepositsService with ChangeNotifier {
         handleHttpErrors(response);
       }
     } catch (error) {
-      throw HttpException('Could not delete deposit!');
+      throw HttpException('Could not delete deposit! ' + error.toString());
     }
     return false;
   }

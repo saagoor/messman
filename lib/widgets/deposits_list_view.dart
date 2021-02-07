@@ -62,19 +62,31 @@ class DepositsListCard extends StatelessWidget {
           ],
         ),
         subtitle: Text(DateFormat.MMMMEEEEd().format(deposit.dateTime)),
-        trailing: PopupMenuButton(
+        trailing: PopupMenuButton<DepositActions>(
           itemBuilder: (ctx) => [
             PopupMenuItem(
               child:
                   Text('Edit ' + (deposit is Expense ? 'Expense' : 'Deposit')),
+              value: DepositActions.Edit,
             ),
             PopupMenuItem(
               child: Text(
                   'Delete ' + (deposit is Expense ? 'Expense' : 'Deposit')),
+              value: DepositActions.Delete,
             ),
           ],
+          onSelected: (selected) {
+            if (selected == DepositActions.Delete) {
+              deposit.delete(context);
+            }
+          },
         ),
       ),
     );
   }
+}
+
+enum DepositActions {
+  Edit,
+  Delete,
 }

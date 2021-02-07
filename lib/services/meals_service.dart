@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:messman/constants.dart';
 import 'package:messman/models/http_exception.dart';
 import 'package:messman/models/meal.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 import 'package:http/http.dart' as http;
 
 class MealsService with ChangeNotifier {

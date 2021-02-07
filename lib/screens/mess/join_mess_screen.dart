@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:messman/models/http_exception.dart';
 import 'package:messman/screens/mess/create_mess_screen.dart';
 import 'package:messman/services/auth_service.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 import 'package:messman/services/mess_service.dart';
 import 'package:messman/widgets/screen_loading.dart';
 import 'package:provider/provider.dart';

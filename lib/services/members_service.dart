@@ -6,7 +6,7 @@ import 'package:messman/constants.dart';
 import 'package:messman/models/http_exception.dart';
 import 'package:http/http.dart' as http;
 import 'package:messman/models/user.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 
 class MembersService with ChangeNotifier {
   final String token;
@@ -16,6 +16,7 @@ class MembersService with ChangeNotifier {
   }) {
     if (prevItems != null && prevItems.length > 0) {
       this._items = prevItems;
+      isLoaded = true;
     }
   }
   bool isLoaded = false;

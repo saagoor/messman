@@ -12,11 +12,21 @@ import 'package:messman/models/task.dart';
 import 'package:messman/models/user.dart';
 import 'package:messman/services/auth_service.dart';
 import 'package:http/http.dart' as http;
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 
 class MessService with ChangeNotifier {
   final AuthService auth;
-  MessService({@required this.auth});
+  MessService({@required this.auth, MessService prev}) {
+    if (prev != null) {
+      this._mess = prev.mess;
+      this.expenses = prev.expenses;
+      this.tasks = prev.tasks;
+      this.members = prev.members;
+      this.monthsMeals = prev.monthsMeals;
+      this.deposits = prev.deposits;
+      this.isLoaded = true;
+    }
+  }
 
   bool isLoaded = false;
   Mess _mess;

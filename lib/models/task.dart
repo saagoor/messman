@@ -5,7 +5,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'package:messman/constants.dart';
 import 'package:messman/models/http_exception.dart';
-import 'package:messman/services/helpers.dart';
+import 'package:messman/includes/helpers.dart';
 
 part 'task.g.dart';
 
