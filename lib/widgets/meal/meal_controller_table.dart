@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:messman/models/meal.dart';
-import 'package:messman/services/auth_service.dart';
-import 'package:messman/services/helpers.dart';
 import 'package:messman/services/meals_service.dart';
 import 'package:messman/services/members_service.dart';
 import 'package:messman/services/mess_service.dart';
+import 'package:messman/widgets/meal/meals_checkbox.dart';
 import 'package:provider/provider.dart';
+
+import 'meals_checkbox_whole_mess.dart';
 
 class MealControllerTable extends StatefulWidget {
   final DateTime dateTime;
@@ -17,7 +18,6 @@ class MealControllerTable extends StatefulWidget {
 
 class _MealControllerTableState extends State<MealControllerTable> {
   MembersService _membersData;
-  AuthService _authData;
   MealsService _mealsData;
   MessService _messData;
   bool _firstInit = true;
@@ -40,9 +40,8 @@ class _MealControllerTableState extends State<MealControllerTable> {
 
   @override
   Widget build(BuildContext context) {
-    _messData = Provider.of<MessService>(context, listen: false);
-    _membersData = Provider.of<MembersService>(context, listen: false);
-    _authData = Provider.of<AuthService>(context);
+    _messData = Provider.of<MessService>(context);
+    _membersData = Provider.of<MembersService>(context);
     _mealsData = Provider.of<MealsService>(context);
 
     if (_firstInit) {
@@ -62,10 +61,11 @@ class _MealControllerTableState extends State<MealControllerTable> {
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       children: [
         TableRow(children: [
-          Text('Member'),
-          if (_messData.mess.breakfastSize <= 0) Text(''),
-          if (_messData.mess.breakfastSize > 0)
-            Text('Breakfast', textAlign: TextAlign.center),
+          Text(''),
+          Text(
+            _messData.mess.breakfastSize > 0 ? 'Breakfast' : '',
+            textAlign: TextAlign.center,
+          ),
           Text('Lunch', textAlign: TextAlign.center),
           Text('Dinner', textAlign: TextAlign.center),
         ]),
@@ -74,42 +74,10 @@ class _MealControllerTableState extends State<MealControllerTable> {
             Text('Whole Mess'),
             if (_messData.mess.breakfastSize <= 0) Text(''),
             if (_messData.mess.breakfastSize > 0)
-              Checkbox(
-                value: _breakfastOn,
-                onChanged: (_) {
-                  if (_authData.user.isManager) {
-                    bool value =
-                        _mealsData.toggleWholeMessBreakfast(widget.dateTime);
-                    setState(() {
-                      _breakfastOn = value;
-                    });
-                  }
-                },
-              ),
-            Checkbox(
-              value: _lunchOn,
-              onChanged: (_) {
-                if (_authData.user.isManager) {
-                  final bool value =
-                      _mealsData.toggleWholeMessLunch(widget.dateTime);
-                  setState(() {
-                    _lunchOn = value;
-                  });
-                }
-              },
-            ),
-            Checkbox(
-              value: _dinnerOn,
-              onChanged: (_) {
-                if (_authData.user.isManager) {
-                  bool value =
-                      _mealsData.toggleWholeMessDinner(widget.dateTime);
-                  setState(() {
-                    _dinnerOn = value;
-                  });
-                }
-              },
-            ),
+              MealsCheckboxWholeMess(
+                  _breakfastOn, 'breakfast', widget.dateTime),
+            MealsCheckboxWholeMess(_lunchOn, 'lunch', widget.dateTime),
+            MealsCheckboxWholeMess(_dinnerOn, 'dinner', widget.dateTime),
           ],
         ),
         ..._mealsData?.membersMeals(widget.dateTime)?.map((theMeal) {
@@ -150,63 +118,6 @@ class _MealControllerTableState extends State<MealControllerTable> {
             builder: (ctx, meal, child) => MealsCheckbox(meal, 'dinner'),
           ),
         ),
-      ],
-    );
-  }
-}
-
-class MealsCheckbox extends StatefulWidget {
-  final MembersMeal meal;
-  final String type;
-  MealsCheckbox(this.meal, this.type);
-  @override
-  _MealsCheckboxState createState() => _MealsCheckboxState();
-}
-
-class _MealsCheckboxState extends State<MealsCheckbox> {
-  bool _isLoading = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final _authData = Provider.of<AuthService>(context);
-    final meal = widget.meal;
-    final mealType = widget.type;
-    return Stack(
-      alignment: Alignment.center,
-      children: <Widget>[
-        Checkbox(
-          value: (mealType == 'breakfast')
-              ? meal.breakfast
-              : (mealType == 'lunch') ? meal.lunch : meal.dinner,
-          onChanged: canOnOffMeal(_authData.user, meal)
-              ? (_) async {
-                  setState(() {
-                    _isLoading = true;
-                  });
-                  await meal
-                      .toggleMeal(mealType, _authData.token)
-                      .catchError((error) {
-                    showHttpError(context, error);
-                  });
-                  setState(() {
-                    _isLoading = false;
-                  });
-                }
-              : null,
-        ),
-        if (_isLoading)
-          Positioned.fill(
-            child: Container(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              child: Center(
-                child: SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 3),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }

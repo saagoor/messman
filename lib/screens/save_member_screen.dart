@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/user.dart';
 import 'package:messman/services/members_service.dart';
 import 'package:flutter/material.dart';
 import 'package:messman/widgets/network_circle_avatar.dart';
@@ -43,8 +43,7 @@ class _SaveMemberScreenState extends State<SaveMemberScreen> {
     try {
       await Provider.of<MembersService>(context, listen: false)
           .addMember(_member, _membersImage);
-      Navigator.of(context).pop(true);
-      return;
+      return Navigator.of(context).pop(true);
     } catch (error) {
       _showErrors(error.toString());
     }

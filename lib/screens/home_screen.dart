@@ -76,9 +76,11 @@ class _HomeScreenState extends State<HomeScreen> {
       await messService.fetchAndSet().catchError((error) {
         showHttpError(context, error);
       });
-      setState(() {
-        _isLoading = false;
-      });
+      if (context != null) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -117,19 +119,19 @@ class _HomeScreenState extends State<HomeScreen> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
-            title: Text('Overview'),
+            label: 'Overview',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.monetization_on),
-            title: Text('Expenses'),
+            label: 'Expenses',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.group_work),
-            title: Text('Tasks & Bazar..'),
+            label: 'Tasks & Bazar..',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.restaurant),
-            title: Text('Meals'),
+            label: 'Meals',
           ),
         ],
         currentIndex: _currentIndex,

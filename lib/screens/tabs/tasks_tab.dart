@@ -26,6 +26,7 @@ class _TasksTabContentState extends State<TasksTabContent>
   TabController _tabController;
   int _index = 0;
 
+  AuthService auth;
   TasksService tasksService;
 
   Future<void> _loadTasks() async {
@@ -37,6 +38,7 @@ class _TasksTabContentState extends State<TasksTabContent>
   @override
   Widget build(BuildContext context) {
     tasksService = Provider.of<TasksService>(context);
+    auth = Provider.of<AuthService>(context);
     return Stack(
       children: <Widget>[
         RefreshIndicator(

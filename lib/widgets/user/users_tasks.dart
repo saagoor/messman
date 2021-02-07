@@ -9,13 +9,14 @@ import 'package:provider/provider.dart';
 class UsersTasks extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final userId = Provider.of<AuthService>(context).user.id;
     final taskService = Provider.of<TasksService>(context);
-    final List<Task> tasks = taskService.upcomingTasks(
-      userId: Provider.of<AuthService>(context, listen: false).user.id,
-    );
+    final List<Task> tasks = taskService.upcomingTasks(userId: userId);
     if (tasks.length <= 0) {
       return Text(
-        ' No remaining task found this week, chill out!',
+        taskService.usersTasks(userId: userId).length == 0
+            ? ' No task has been assigned to you yet.'
+            : ' No remaining task found this week, chill out!',
         style: TextStyle(color: Theme.of(context).primaryColorLight),
       );
     }

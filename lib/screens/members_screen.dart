@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/user.dart';
 import 'package:messman/screens/auth/profile_screen.dart';
 import 'package:messman/screens/save_member_screen.dart';
 import 'package:messman/services/helpers.dart';
@@ -83,11 +83,14 @@ class MemberListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Hero(
-          tag: member.id ?? 0,
-          child: MembersCircleAvatar(
-            imageUrl: member.imageUrl,
-            firstChar: member.name[0],
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 15),
+          child: Hero(
+            tag: member.id ?? 0,
+            child: MembersCircleAvatar(
+              imageUrl: member.imageUrl,
+              firstChar: member.name[0],
+            ),
           ),
         ),
         title: Text(member.name),

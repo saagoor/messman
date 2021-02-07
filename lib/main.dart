@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:messman/screens/add_deposit_screen.dart';
 import 'package:messman/screens/add_expense_screen.dart';
+import 'package:messman/screens/auth/edit_profile_screen.dart';
 import 'package:messman/screens/auth/forgot_password_screen.dart';
 import 'package:messman/screens/auth/profile_screen.dart';
 import 'package:messman/screens/auth/signin_screen.dart';
@@ -15,7 +16,7 @@ import 'package:messman/screens/members_screen.dart';
 import 'package:messman/screens/mess/create_mess_screen.dart';
 import 'package:messman/screens/save_member_screen.dart';
 import 'package:messman/screens/save_task_screen.dart';
-import 'package:messman/screens/settings_screen.dart';
+import 'package:messman/screens/settings/settings_screen.dart';
 import 'package:messman/screens/wrapper.dart';
 import 'package:messman/services/auth_service.dart';
 import 'package:messman/services/deposits_service.dart';
@@ -43,10 +44,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider2<AuthService, MessService, MembersService>(
           create: (ctx) => MembersService(),
           update: (ctx, auth, messData, prev) {
-            final prevItems = prev.isLoaded || prev.items.length > 0
-                ? prev.items
-                : messData.members;
-            return MembersService(token: auth.token, prevItems: prevItems);
+            return MembersService(
+              token: auth.token,
+              prevItems: messData.members,
+            );
           },
         ),
         ChangeNotifierProxyProvider2<AuthService, MessService, ExpensesService>(
@@ -71,16 +72,20 @@ class MyApp extends StatelessWidget {
           create: (ctx) => MealsService(),
           update: (ctx, auth, messData, prev) {
             return MealsService(
-                token: auth.token, monthsMeals: messData.monthsMeals);
+              token: auth.token,
+              monthsMeals: messData.monthsMeals,
+            );
           },
         ),
-        ChangeNotifierProxyProvider2<AuthService, MessService, DepositsService>(
+        ChangeNotifierProxyProvider3<AuthService, MessService, ExpensesService,
+            DepositsService>(
           create: (ctx) => DepositsService(),
-          update: (ctx, auth, messData, prev) {
-            final prevItems = prev.isLoaded || prev.items.length > 0
-                ? prev.items
-                : messData.deposits;
-            return DepositsService(token: auth.token, prevItems: prevItems);
+          update: (ctx, auth, messData, expenseData, prev) {
+            return DepositsService(
+              token: auth.token,
+              prevItems: messData.deposits,
+              depositedExpenses: expenseData.depositedItems,
+            );
           },
         ),
         ChangeNotifierProxyProvider<AuthService, FoodsService>(
@@ -143,6 +148,7 @@ class MessApp extends StatelessWidget {
         CloseMonthScreen.routeName: (ctx) => CloseMonthScreen(),
         SettingsScreen.routeName: (ctx) => SettingsScreen(),
         ProfileScreen.routeName: (ctx) => ProfileScreen(),
+        EditProfileScreen.routeName: (ctx) => EditProfileScreen(),
         MembersScreen.routeName: (ctx) => MembersScreen(),
         SaveMemberScreen.routeName: (ctx) => SaveMemberScreen(),
         MealsScreen.routeName: (ctx) => MealsScreen(),

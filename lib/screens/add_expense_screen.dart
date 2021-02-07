@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/expense.dart';
 import 'package:messman/services/auth_service.dart';
 import 'package:messman/services/expenses_service.dart';
 import 'package:messman/services/helpers.dart';
@@ -26,6 +26,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     shortDetails: '',
     type: 'shopping',
     dateTime: DateTime.now(),
+    fromSelfPocket: true,
   );
 
   void _saveForm() async {
@@ -64,8 +65,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     final messService = Provider.of<MessService>(context);
     final authService = Provider.of<AuthService>(context);
 
-    if (_expense.expenderId == null) {
-      _expense.expenderId = authService.user.id;
+    if (_expense.memberId == null) {
+      _expense.memberId = authService.user.id;
     }
 
     return Scaffold(
@@ -86,7 +87,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   },
                   title: Text('Add to Deposit'),
                   subtitle: Text(
-                      'Enable this button if the spender paid from his own money.'),
+                      'Enable this if the expense was spent from self pocket not from the mess\'s cash.'),
                   isThreeLine: true,
                 ),
                 Row(
@@ -137,9 +138,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       SizedBox(height: 20),
                       MemberSelector(
                         labelText: 'Expended By',
-                        initialId: _expense.expenderId,
+                        initialId: _expense.memberId,
                         onChanged: (int selectedMemberId) {
-                          _expense.expenderId = selectedMemberId;
+                          _expense.memberId = selectedMemberId;
                         },
                       ),
                       SizedBox(height: 20),

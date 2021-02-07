@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:messman/models/http_exception.dart';
 import 'package:messman/screens/mess/create_mess_screen.dart';
 import 'package:messman/services/auth_service.dart';
 import 'package:messman/services/helpers.dart';
@@ -21,7 +22,8 @@ class _JoinMessScreenState extends State<JoinMessScreen> {
     if (joinCode.isEmpty) {
       return showHttpError(
         context,
-        'Please enter your mess\'s join code. Ask your manager to get that code from add member section.',
+        new HttpException(
+            'Please enter your mess\'s join code. Ask your manager to get that code from add member section.'),
         title: 'No Join Code!',
       );
     }
@@ -34,7 +36,10 @@ class _JoinMessScreenState extends State<JoinMessScreen> {
         Provider.of<AuthService>(context, listen: false).messId = messId;
         return;
       } else {
-        showHttpError(context, 'Received mess ID is invalid!');
+        showHttpError(
+          context,
+          new HttpException('Received mess ID is invalid!'),
+        );
       }
     } catch (error) {
       setState(() {

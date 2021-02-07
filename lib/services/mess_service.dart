@@ -3,10 +3,14 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:messman/constants.dart';
+import 'package:messman/models/deposit.dart';
+import 'package:messman/models/expense.dart';
 import 'package:messman/models/http_exception.dart';
 import 'package:messman/models/meal.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/mess.dart';
+import 'package:messman/models/transaction.dart';
 import 'package:messman/models/task.dart';
+import 'package:messman/models/user.dart';
 import 'package:messman/services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:messman/services/helpers.dart';
@@ -44,17 +48,23 @@ class MessService with ChangeNotifier {
         if (result != null || result['data'] != null) {
           setAllData(result['data']);
           isLoaded = true;
+          members.forEach((element) => print(element.name));
           notifyListeners();
         } else {
-          throw HttpException('Empty data received!');
+          throw HttpException(
+            'Empty data received!',
+            statusCode: response.statusCode,
+          );
         }
       } else {
+        if (response.statusCode == 404) {
+          auth.messId = null;
+        }
         return handleHttpErrors(response);
       }
     } on SocketException catch (_) {
       throw HttpException('Could not connect to the server!');
     } catch (error) {
-      print(error);
       throw error;
     }
   }
@@ -63,6 +73,10 @@ class MessService with ChangeNotifier {
     // Setting mess data
     _mess = Mess.fromJson(data['mess']);
 
+    // Updating user data
+    if (data['user'] != null) {
+      auth.user = User.fromJson(data['user']);
+    }
     // Setting expenses data
     if (data['expenses'] != null) {
       List<Expense> tempExpenses = [];
@@ -120,16 +134,13 @@ class MessService with ChangeNotifier {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
           setAllData(result['data']);
+          notifyListeners();
           return _mess?.id;
         } else {
           throw HttpException('Could not join mess!');
         }
       } else {
-        try {
-          await handleHttpErrors(response);
-        } catch (error) {
-          throw error;
-        }
+        handleHttpErrors(response);
       }
       return null;
     } catch (error) {
@@ -151,11 +162,30 @@ class MessService with ChangeNotifier {
           return _mess?.id;
         }
       } else {
-        try {
-          await handleHttpErrors(response);
-        } catch (error) {
-          throw error;
+        handleHttpErrors(response);
+      }
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  Future<void> editMess(Mess mess) async {
+    try {
+      final response = await http.put(
+        baseUrl + 'mess/${mess.id}',
+        headers: httpHeader(auth.token),
+        body: json.encode(mess.toJson()),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final result = json.decode(response.body) as Map<String, dynamic>;
+        if (result != null && result['data'] != null) {
+          setAllData(result['data']);
+          notifyListeners();
+          return;
         }
+      } else {
+        handleHttpErrors(response);
       }
       return null;
     } catch (error) {
@@ -170,19 +200,36 @@ class MessService with ChangeNotifier {
         headers: httpHeader(auth.token),
       );
       if (response.statusCode == 200) {
-        final result = json.decode(response.body) as Map<String, dynamic>;
-        if (result != null && result['data'] != null) {
-          // setAllData(result['data']);
+        final result = json.decode(response.body);
+        if (result != null && result == 1) {
           _mess = null;
-          auth.logout();
+          auth.messId = null;
         }
       } else {
-        try {
-          await handleHttpErrors(response);
-        } catch (error) {
-          throw error;
-        }
+        handleHttpErrors(response);
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  Future<bool> leaveMess() async {
+    try {
+      final response = await http.post(
+        baseUrl + 'mess/leave',
+        headers: httpHeader(auth.token),
+      );
+      if (response.statusCode == 200) {
+        final result = json.decode(response.body);
+        if (result != null && result == 1) {
+          _mess = null;
+          auth.messId = null;
+          return true;
+        }
+      } else {
+        handleHttpErrors(response);
+      }
+      return false;
     } catch (error) {
       throw error;
     }

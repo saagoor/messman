@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/expense.dart';
+import 'package:messman/models/transaction.dart';
+import 'package:messman/models/user.dart';
 import 'package:messman/services/expenses_service.dart';
 import 'package:messman/services/helpers.dart';
 import 'package:messman/services/members_service.dart';
@@ -23,7 +25,7 @@ class ExpensesListView extends StatelessWidget {
     }
 
     return ListView.builder(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       itemCount: expenses.length,
       itemBuilder: (ctx, i) {
         Widget append = SizedBox();
@@ -60,10 +62,11 @@ class ExpenseListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final User expender =
-        Provider.of<MembersService>(context).memberById(expense.expenderId);
-    return GestureDetector(
+        Provider.of<MembersService>(context).memberById(expense.memberId);
+    return Card(
+      elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.only(left: 15, top: 5, bottom: 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -84,8 +87,20 @@ class ExpenseListItem extends StatelessWidget {
                   if (expense.shortDetails != null)
                     Text(expense.shortDetails, style: TextStyle(fontSize: 16)),
                   SizedBox(height: 4),
-                  Text(expender?.name ?? 'MessMan User',
-                      style: TextStyle(fontSize: 13)),
+                  Row(
+                    children: [
+                      Text(expender?.name ?? 'MessMan User',
+                          style: TextStyle(fontSize: 13)),
+                      SizedBox(width: 5),
+                      Text(
+                        expense.fromSelfPocket ? 'Self Pocket' : 'Mess Balance',
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -103,52 +118,30 @@ class ExpenseListItem extends StatelessWidget {
                       : 'No Date',
                 ),
               ],
+            ),
+            PopupMenuButton(
+              itemBuilder: (ctx) => [
+                PopupMenuItem(
+                  child: Text('Edit Expense'),
+                  value: ExpenseActions.Edit,
+                ),
+                PopupMenuItem(
+                  child: Text('Delete Expense'),
+                  value: ExpenseActions.Delete,
+                ),
+              ],
+              onSelected: (selectedItem) async {
+                if (selectedItem == ExpenseActions.Edit) {
+                } else if (selectedItem == ExpenseActions.Delete) {
+                  expense.delete(context);
+                }
+              },
             )
           ],
         ),
       ),
-      onLongPress: () async {
-        bool confirmDelete = await showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            actionsPadding: EdgeInsets.only(right: 10),
-            title: Text('Delete Expense!'),
-            content: Text('Do you want to delete this expense?'),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-                child: Text('Cancel'),
-              ),
-              FlatButton(
-                color: Theme.of(context).errorColor,
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-                child: Text('Delete'),
-              )
-            ],
-          ),
-        );
-        if (confirmDelete) {
-          Provider.of<ExpensesService>(context, listen: false)
-              .delete(expense.id)
-              .then((value) {
-            if (context != null && value == true) {
-              Scaffold.of(context).showSnackBar(
-                SnackBar(content: Text('Expense deleted successfully!')),
-              );
-            }
-          }).catchError((error) {
-            if (context != null) {
-              Scaffold.of(context).showSnackBar(
-                SnackBar(content: Text(error.toString())),
-              );
-            }
-          });
-        }
-      },
     );
   }
 }
+
+enum ExpenseActions { Edit, Delete }

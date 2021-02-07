@@ -119,8 +119,8 @@ class Meal with ChangeNotifier {
   }
 
   Future<void> setFood(Food newFood, String token) async {
-    final oldFood = food;
-    food = newFood;
+    final oldFood = this.food;
+    this.food = newFood;
     print(food?.title);
     notifyListeners();
     try {
@@ -133,7 +133,7 @@ class Meal with ChangeNotifier {
           'food_id': newFood.id,
         }),
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
           final newMeal = Meal.fromJson(result['data']);
@@ -218,10 +218,11 @@ class MembersMeal with ChangeNotifier {
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class DaysMeal {
-  final List<MembersMeal> membersMeals;
-  final Meal breakfast;
-  final Meal lunch;
-  final Meal dinner;
+  final List<MembersMeal>
+      membersMeals; // List of meals of all members of the day.
+  final Meal breakfast; // What's for breakfast Meal/Menu of the day.
+  final Meal lunch; // What's for lunch Meal/Menu of the day.
+  final Meal dinner; // What's for dinner Meal/Menu of the day.
 
   DaysMeal({this.membersMeals, this.breakfast, this.lunch, this.dinner});
 

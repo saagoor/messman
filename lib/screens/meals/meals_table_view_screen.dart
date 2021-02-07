@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/user.dart';
 import 'package:messman/services/calc_service.dart';
 import 'package:messman/services/helpers.dart';
 import 'package:messman/services/meals_service.dart';
@@ -183,6 +183,7 @@ class _MealsTableViewScreenState extends State<MealsTableViewScreen> {
   }
 
   getRows(List<User> members) {
+    final int today = DateTime.now().day;
     List<TableRow> rows = [];
     for (var i = 1; i <= lastDayOfMonth(null); i++) {
       rows.add(
@@ -203,7 +204,9 @@ class _MealsTableViewScreenState extends State<MealsTableViewScreen> {
             ...members.map(
               (member) => Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: MealsCell(day: i, memberId: member.id),
+                child: today < i
+                    ? Text('-', textAlign: TextAlign.center)
+                    : MealsCell(day: i, memberId: member.id),
               ),
             ),
             if (members.length > 3)

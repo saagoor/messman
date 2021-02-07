@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:messman/constants.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/deposit.dart';
+import 'package:messman/models/expense.dart';
+import 'package:messman/models/transaction.dart';
 import 'package:messman/services/helpers.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,6 +14,7 @@ class DepositsService with ChangeNotifier {
   DepositsService({
     this.token,
     List<Deposit> prevItems,
+    this.depositedExpenses,
   }) {
     if (prevItems != null && prevItems.length > 0) {
       _items = prevItems;
@@ -20,10 +23,12 @@ class DepositsService with ChangeNotifier {
   }
 
   bool isLoaded = false;
-
+  List<Expense> depositedExpenses = [];
   List<Deposit> _items = [];
 
-  List<Deposit> get items {
+  List<Transaction> get items {
+    if (depositedExpenses != null && depositedExpenses.length > 0)
+      return [..._items, ...depositedExpenses];
     return [..._items];
   }
 
@@ -33,8 +38,8 @@ class DepositsService with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Deposit> depositsByUser(int userId) {
-    return _items.where((element) => element.memberId == userId).toList();
+  List<Transaction> depositsByUser(int userId) {
+    return this.items.where((element) => element.memberId == userId).toList();
   }
 
   Future<void> fetchAndSet() async {

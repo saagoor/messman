@@ -63,73 +63,64 @@ class MealsService with ChangeNotifier {
         headers: httpHeader(token),
       );
       if (response.statusCode == 200) {
-        final result = json.decode(response.body) as Map<String, dynamic>;
-        if (result != null && result['data'] != null) {
-          Map<String, DaysMeal> tempMeals = {};
-          result['data'].forEach((i, val) {
-            tempMeals.putIfAbsent(i, () => DaysMeal.fromJson(val));
-          });
-          monthsMeals = tempMeals;
-          notifyListeners();
-        }
+        this.processMonthsMealsData(response);
       } else {
         return handleHttpErrors(response);
       }
     } on SocketException catch (_) {
       throw HttpException('Could not connect to the server!');
+    } on HttpException catch (error) {
+      throw error;
     } catch (error) {
       print(error);
       throw HttpException('Something went wrong, could not load meals!');
     }
   }
 
-  bool toggleWholeMessBreakfast(DateTime dateTime) {
-    bool shouldOff = false;
-    membersMeals(dateTime).forEach((element) {
-      if (element.breakfast) {
-        shouldOff = true;
-      }
-    });
-    membersMeals(dateTime).forEach((element) async {
-      if ((shouldOff && element.breakfast) ||
-          (!shouldOff && !element.breakfast)) {
-        await element.toggleMeal('breakfast', token).catchError((_) {});
-      }
-    });
-    notifyListeners();
-    return !shouldOff;
+  void processMonthsMealsData(http.Response response) {
+    final result = json.decode(response.body) as Map<String, dynamic>;
+    if (result != null && result['data'] != null) {
+      Map<String, DaysMeal> tempMeals = {};
+      result['data'].forEach((i, val) {
+        tempMeals.putIfAbsent(i, () => DaysMeal.fromJson(val));
+      });
+      monthsMeals = tempMeals;
+      notifyListeners();
+    }
   }
 
-  bool toggleWholeMessLunch(DateTime dateTime) {
-    bool shouldOff = false;
-    membersMeals(dateTime).forEach((element) {
-      if (element.lunch) {
-        shouldOff = true;
+  Future<bool> toggleWholeMessMeal(DateTime dateTime, String type) async {
+    try {
+      final response = await http.patch(
+        baseUrl + 'meals/toggle',
+        headers: httpHeader(token),
+        body: jsonEncode({'date': dateTime.toIso8601String(), 'type': type}),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        this.processMonthsMealsData(response);
+        notifyListeners();
+        return this.membersMeals(dateTime).every((element) {
+          bool value;
+          switch (type) {
+            case 'breakfast':
+              value = element.breakfast;
+              break;
+            case 'lunch':
+              value = element.lunch;
+              break;
+            case 'dinner':
+              value = element.dinner;
+              break;
+          }
+          return value;
+        });
+      } else {
+        handleHttpErrors(response);
       }
-    });
-    membersMeals(dateTime).forEach((element) async {
-      if ((shouldOff && element.lunch) || (!shouldOff && !element.lunch)) {
-        await element.toggleMeal('lunch', token).catchError((_) {});
-      }
-    });
-    notifyListeners();
-    return !shouldOff;
-  }
-
-  bool toggleWholeMessDinner(DateTime dateTime) {
-    bool shouldOff = false;
-    membersMeals(dateTime).forEach((element) {
-      if (element.dinner) {
-        shouldOff = true;
-      }
-    });
-    membersMeals(dateTime).forEach((element) async {
-      if ((shouldOff && element.dinner) || (!shouldOff && !element.dinner)) {
-        await element.toggleMeal('dinner', token).catchError((_) {});
-      }
-    });
-    notifyListeners();
-    return !shouldOff;
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 
   Future<void> addGuestMeal(

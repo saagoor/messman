@@ -3,8 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:messman/constants.dart';
+import 'package:messman/models/expense.dart';
 import 'package:messman/models/http_exception.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/transaction.dart';
 import 'package:http/http.dart' as http;
 import 'package:messman/services/helpers.dart';
 
@@ -28,6 +29,10 @@ class ExpensesService with ChangeNotifier {
     return [..._items];
   }
 
+  List<Expense> get depositedItems {
+    return this.items.where((element) => element.fromSelfPocket).toList();
+  }
+
   set items(List<Expense> newItems) {
     this._items = newItems;
     isLoaded = true;
@@ -35,7 +40,7 @@ class ExpensesService with ChangeNotifier {
   }
 
   List<Expense> expensesByUser(int userId) {
-    return _items.where((element) => element.expenderId == userId).toList();
+    return _items.where((element) => element.memberId == userId).toList();
   }
 
   Future<void> fetchAndSet() async {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/transaction.dart';
+import 'package:messman/models/user.dart';
+import 'package:messman/screens/auth/edit_profile_screen.dart';
 import 'package:messman/services/auth_service.dart';
 import 'package:messman/widgets/network_circle_avatar.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +22,7 @@ class ProfileCard extends StatelessWidget {
       // mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Hero(
-          tag: user.id ?? 0,
+          tag: user?.id ?? 0,
           child: NetworkCircleAvatar(imageUrl: user?.imageUrl, size: 100),
         ),
         SizedBox(height: 20),
@@ -47,7 +49,17 @@ class ProfileCard extends StatelessWidget {
               borderRadius: BorderRadiusDirectional.circular(30),
             ),
             child: FlatButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed(EditProfileScreen.routeName)
+                    .then((value) {
+                  if (value != null && value) {
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(content: Text('Your profile has been updated.')),
+                    );
+                  }
+                });
+              },
               icon: Icon(Icons.edit),
               label: Text('Edit Profile'),
               color: Colors.transparent,

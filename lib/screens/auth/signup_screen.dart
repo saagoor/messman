@@ -22,9 +22,9 @@ class _SigninScreenState extends State<SignupScreen> {
   bool _isLoading = false;
 
   Map<String, String> _authData = {
-    'name': 'MH Sagor',
-    'email': 'mhsagor91@gmail.com',
-    'password': 'password',
+    'name': '',
+    'email': '',
+    'password': '',
   };
 
   void _showError(String message) {
@@ -55,7 +55,7 @@ class _SigninScreenState extends State<SignupScreen> {
     _form.currentState.save();
     try {
       await _auth.signUp(_authData);
-      Navigator.of(context).pushReplacementNamed('/');
+      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
     } on HttpException catch (error) {
       _showError(error.toString());
     } catch (error) {

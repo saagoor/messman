@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:messman/models/http_exception.dart';
 import 'package:messman/models/meal.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/transaction.dart';
 import 'package:http/http.dart' as http;
+import 'package:messman/models/user.dart';
 import 'package:messman/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 int lastDayOfMonth(DateTime dateTime) {
   final now = dateTime ?? DateTime.now();
@@ -52,7 +54,7 @@ extension StringExtension on String {
 void showHttpError(BuildContext context, error, {String title}) {
   showDialog(
     context: context,
-    builder: (ctx) => AlertDialog(
+    builder: (context) => AlertDialog(
       title: Text(title ?? 'Oooops!'),
       content: Text(error.toString()),
       actions: <Widget>[
@@ -66,51 +68,75 @@ void showHttpError(BuildContext context, error, {String title}) {
         ),
       ],
     ),
-  );
+  ).then((_) async {
+    if (error is HttpException && error.statusCode == 401 && context != null) {
+      final auth = Provider.of<AuthService>(context, listen: false);
+      await auth.logout();
+      print('Unauthenticated user logged out.');
+      return Navigator.of(context)
+          .pushNamedAndRemoveUntil('/', (route) => false);
+    }
+  });
 }
 
-void showHttpSnackbarError(BuildContext context, error) {
+void showHttpSnackbarError(BuildContext context, Exception error) {
   if (context != null) {
     Scaffold.of(context)
         .showSnackBar(SnackBar(content: Text(error.toString())));
   }
 }
 
-Future<void> handleHttpErrors(http.Response response,
-    {Function logoutCallback}) async {
+void handleHttpErrors(http.Response response) {
   final Map<String, dynamic> result = json.decode(response.body);
   if (response.statusCode == 404) {
-    throw HttpException('Error: 404! Unknown action.');
+    throw HttpException(
+      'Error: 404! ' + result['message'] ?? '',
+      statusCode: response.statusCode,
+    );
   } else if (response.statusCode == 401 &&
       result['message'].toString().contains('Unauthenticated')) {
-    // Unauthenticated
-    if (logoutCallback != null) {
-      // await logoutCallback();
-      await AuthService().logout();
-    }
     throw HttpException(
-        'Sorry you\'re not logged in. You need to be logged in for this action.');
+      'Sorry you\'re not logged in. You need to be logged in for this action.',
+      statusCode: response.statusCode,
+    );
   } else if (response.statusCode == 500) {
-    print(response.body);
+    print('Error ${response.statusCode}: ' + response.body);
     throw HttpException(
-        'Sorry, internal server error occured. Please try again later or contact the support.');
+      result['message'] ??
+          'Sorry, internal server error occured. Please try again later or contact the support.',
+      statusCode: response.statusCode,
+    );
+  } else if (response.statusCode != null && result['errors'] == null) {
+    print('Error ${response.statusCode}: ' + response.body);
+    throw HttpException(
+      result['message'] ??
+          'Sorry, something went wrong. Could not complete the action',
+      statusCode: response.statusCode,
+    );
   }
   final errors = result['errors'] as Map<String, dynamic>;
   final errorMsgs = errors?.values?.toList();
   if (errorMsgs == null) {
     if (result['success'] == false) {
-      throw HttpException(result['message']);
+      throw HttpException(
+        result['message'],
+        statusCode: response.statusCode,
+      );
     }
     return;
   }
   String finalMsg = '';
   errorMsgs.forEach((element) {
     if (finalMsg.isNotEmpty) {
-      finalMsg += ' ';
+      finalMsg += ' \n'; // Adds line break for multiple error.
     }
     return finalMsg += element[0];
   });
-  throw HttpException(finalMsg);
+  print(errors);
+  throw HttpException(
+    finalMsg,
+    statusCode: response.statusCode,
+  );
 }
 
 Map<String, String> httpHeader(String token, {bool hasFile = false}) => {

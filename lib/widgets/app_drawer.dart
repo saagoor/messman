@@ -3,7 +3,7 @@ import 'package:messman/screens/auth/profile_screen.dart';
 import 'package:messman/screens/deposits_screen.dart';
 import 'package:messman/screens/meals/meals_screen.dart';
 import 'package:messman/screens/members_screen.dart';
-import 'package:messman/screens/settings_screen.dart';
+import 'package:messman/screens/settings/settings_screen.dart';
 import 'package:messman/services/auth_service.dart';
 import 'package:messman/widgets/network_circle_avatar.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +46,8 @@ class AppDrawer extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     auth.logout();
-                    Navigator.of(context).pushReplacementNamed('/');
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/', (route) => false);
                   },
                   child: Text(
                     'Sign Out',

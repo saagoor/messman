@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:messman/screens/meals/add_guest_meal.dart';
 import 'package:messman/screens/meals/meals_planner_view.dart';
 import 'package:messman/screens/meals/meals_table_view_screen.dart';
-import 'package:messman/services/helpers.dart';
-import 'package:messman/services/meals_service.dart';
-import 'package:provider/provider.dart';
 
 class MealsScreen extends StatelessWidget {
   static const routeName = '/meals';
@@ -13,9 +10,9 @@ class MealsScreen extends StatelessWidget {
     final now = DateTime.now();
     int currentIndex = (now.day - 1);
 
-    Provider.of<MealsService>(context, listen: false)
-        .fetchAndSetMeals()
-        .catchError((error) => showHttpError(context, error));
+    // Provider.of<MealsService>(context, listen: false)
+    //     .fetchAndSetMeals()
+    //     .catchError((error) => showHttpError(context, error));
 
     return DefaultTabController(
       initialIndex: (now.day - 1),

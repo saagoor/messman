@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:messman/constants.dart';
 import 'package:messman/models/http_exception.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/transaction.dart';
+import 'package:messman/models/user.dart';
 import 'package:messman/services/helpers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -32,6 +34,12 @@ class AuthService with ChangeNotifier {
 
   User get user {
     return _user;
+  }
+
+  set user(User user) {
+    this._user = user;
+    _setAuthPrefs();
+    notifyListeners();
   }
 
   set messId(int messId) {
@@ -98,7 +106,7 @@ class AuthService with ChangeNotifier {
         return _handleErrors(response);
       }
     } catch (error) {
-      throw HttpException(error.toString());
+      throw error;
     }
   }
 
@@ -120,7 +128,7 @@ class AuthService with ChangeNotifier {
   }
 
   void _handleErrors(http.Response response) async {
-    return handleHttpErrors(response, logoutCallback: logout);
+    return handleHttpErrors(response);
   }
 
   void _handleAuth(http.Response response) {
@@ -175,5 +183,37 @@ class AuthService with ChangeNotifier {
 
   String getReadableMessage(String code) {
     return code;
+  }
+
+  Future<void> editProfile(User user, File image) async {
+    try {
+      final Uri uri = Uri.parse(baseUrl + 'profile/edit');
+      var request = http.MultipartRequest('POST', uri);
+      request.headers.addAll(httpHeader(token, hasFile: true));
+      request.fields['name'] = user.name;
+      request.fields['email'] = user.email;
+      request.fields['phone'] = user.phone;
+      if (image != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath('image', image.path),
+        );
+      }
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final result = json.decode(response.body) as Map<String, dynamic>;
+        if (result != null && result['data'] != null) {
+          this.user = User.fromJson(result['data']);
+          notifyListeners();
+        } else {
+          throw HttpException(
+              'Something went wrong, could not update your profile.');
+        }
+      } else {
+        return handleHttpErrors(response);
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 }

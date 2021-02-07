@@ -4,6 +4,7 @@ import 'package:messman/models/food.dart';
 import 'package:messman/models/meal.dart';
 import 'package:messman/screens/meals/set_meal_screen.dart';
 import 'package:messman/services/auth_service.dart';
+import 'package:messman/widgets/network_circle_avatar.dart';
 import 'package:provider/provider.dart';
 
 class MealCard extends StatelessWidget {
@@ -22,94 +23,95 @@ class MealCard extends StatelessWidget {
         Provider.of<AuthService>(context, listen: false).token;
     return ChangeNotifierProvider<Meal>.value(
       value: meal,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        overflow: Overflow.visible,
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              SizedBox(
-                width: 200,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      children: <Widget>[
-                        Image.asset(
-                          'assets/images/${meal.type.toLowerCase()}.png',
-                          height: 30,
-                        ),
-                        SizedBox(height: 8),
-                        Text(meal.type ?? ''),
-                        SizedBox(height: 4),
-                        Consumer<Meal>(
-                          builder: (ctx, meal, child) => Column(
-                            children: <Widget>[
-                              if (alwaysShowSetBtn || meal != null)
-                                Text(
-                                  meal.food?.title ?? 'Not Set',
-                                  style: TextStyle(
-                                    color: meal != null
-                                        ? Theme.of(context).primaryColor
-                                        : Theme.of(context).errorColor,
-                                  ),
+      child: Consumer<Meal>(
+        builder: (ctx, meal, child) => Stack(
+          alignment: Alignment.bottomCenter,
+          overflow: Overflow.visible,
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                SizedBox(
+                  width: 200,
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: <Widget>[
+                          ((meal?.id != null || meal?.food != null))
+                              ? NetworkCircleAvatar(
+                                  imageUrl: meal.food.imageUrl,
+                                  firstChar: meal.type.substring(0, 1),
+                                )
+                              : Image.asset(
+                                  'assets/images/${meal.type.toLowerCase()}.png',
+                                  height: 30,
                                 ),
-                              if (alwaysShowSetBtn ||
-                                  meal == null ||
-                                  meal.food == null) ...[
-                                SizedBox(height: 10),
-                                setMealBtn(context, accessToken),
-                              ],
-                              if (meal?.id != null) SizedBox(height: 20),
-                            ],
-                          ),
-                        ),
-                      ],
+                          SizedBox(height: 8),
+                          Text(meal.type ?? ''),
+                          SizedBox(height: 4),
+                          if (alwaysShowSetBtn || meal != null)
+                            Text(
+                              meal.food?.title ?? 'Not Set',
+                              style: TextStyle(
+                                color: meal != null
+                                    ? Theme.of(context).primaryColor
+                                    : Theme.of(context).errorColor,
+                              ),
+                            ),
+                          if (alwaysShowSetBtn ||
+                              meal == null ||
+                              meal.food == null) ...[
+                            SizedBox(height: 10),
+                            setMealBtn(context, accessToken),
+                          ],
+                          if (meal?.id != null) SizedBox(height: 20),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              if (meal?.id != null) SizedBox(height: 15),
-            ],
-          ),
-          if (meal?.id != null || meal?.food != null)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Consumer<Meal>(
-                builder: (ctx, meal, _) => Row(
-                  children: <Widget>[
-                    LikeButton(
-                      count: meal.dislikes,
-                      iconData: Icons.thumb_down,
-                      onPressed: () {
-                        meal.dislike(accessToken).catchError((error) {
-                          Scaffold.of(context).hideCurrentSnackBar();
-                          Scaffold.of(context).showSnackBar(
-                            SnackBar(content: Text(error.toString())),
-                          );
-                        });
-                      },
-                      isActive: meal.likedByUser != null && !meal.likedByUser,
-                    ),
-                    SizedBox(width: 5),
-                    LikeButton(
-                      count: meal.likes,
-                      iconData: Icons.thumb_up,
-                      onPressed: () {
-                        meal.like(accessToken).catchError((error) {
-                          Scaffold.of(context).hideCurrentSnackBar();
-                          Scaffold.of(context).showSnackBar(
-                            SnackBar(content: Text(error.toString())),
-                          );
-                        });
-                      },
-                      isActive: meal.likedByUser != null && meal.likedByUser,
-                    ),
-                  ],
-                ),
-              ),
+                if (meal?.id != null) SizedBox(height: 15),
+              ],
             ),
-        ],
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: (meal?.id == null || meal?.food == null)
+                    ? Text('')
+                    : Row(
+                        children: <Widget>[
+                          LikeButton(
+                            count: meal.dislikes,
+                            iconData: Icons.thumb_down,
+                            onPressed: () {
+                              meal.dislike(accessToken).catchError((error) {
+                                Scaffold.of(context).hideCurrentSnackBar();
+                                Scaffold.of(context).showSnackBar(
+                                  SnackBar(content: Text(error.toString())),
+                                );
+                              });
+                            },
+                            isActive:
+                                meal.likedByUser != null && !meal.likedByUser,
+                          ),
+                          SizedBox(width: 5),
+                          LikeButton(
+                            count: meal.likes,
+                            iconData: Icons.thumb_up,
+                            onPressed: () {
+                              meal.like(accessToken).catchError((error) {
+                                Scaffold.of(context).hideCurrentSnackBar();
+                                Scaffold.of(context).showSnackBar(
+                                  SnackBar(content: Text(error.toString())),
+                                );
+                              });
+                            },
+                            isActive:
+                                meal.likedByUser != null && meal.likedByUser,
+                          ),
+                        ],
+                      )),
+          ],
+        ),
       ),
     );
   }
@@ -124,7 +126,11 @@ class MealCard extends StatelessWidget {
             arguments: meal?.type,
           ) as Food;
           if (food != null) {
-            meal.setFood(food, accessToken).catchError((error) {
+            print(food.toJson());
+            meal
+                .setFood(food, accessToken)
+                .then((value) => {})
+                .catchError((error) {
               Scaffold.of(context).showSnackBar(
                 SnackBar(content: Text(error.toString())),
               );

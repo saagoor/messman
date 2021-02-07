@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:messman/constants.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/http_exception.dart';
+import 'package:messman/models/mess.dart';
 import 'package:messman/services/auth_service.dart';
 import 'package:messman/services/helpers.dart';
 import 'package:messman/services/mess_service.dart';
@@ -30,17 +31,28 @@ class _CreateMessScreenState extends State<CreateMessScreen> {
     });
 
     try {
-      final messId = await Provider.of<MessService>(context, listen: false)
-          .createMess(_mess);
-      if (messId != null && messId > 0) {
-        Provider.of<AuthService>(context, listen: false).messId = messId;
-        if (context != null) {
-          Navigator.of(context).pushReplacementNamed('/');
-        }
-        return;
+      final messService = Provider.of<MessService>(context, listen: false);
+      if (_mess.id != null) {
+        // Update the mess
+        await messService.editMess(_mess);
+        Navigator.of(context).pop(true);
       } else {
-        showHttpError(context, 'Received mess ID is invalid!');
+        // Create new mess
+        final messId = await messService.createMess(_mess);
+        if (messId != null && messId > 0) {
+          Provider.of<AuthService>(context, listen: false).messId = messId;
+          if (context != null) {
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil('/', (route) => false);
+          }
+        } else {
+          showHttpError(
+            context,
+            new HttpException('Received mess ID is invalid!'),
+          );
+        }
       }
+      return;
     } catch (error) {
       showHttpError(context, error);
     }
@@ -51,9 +63,13 @@ class _CreateMessScreenState extends State<CreateMessScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Mess passedMess = ModalRoute.of(context).settings.arguments;
+    if (passedMess != null && passedMess.id != null) {
+      _mess = passedMess;
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create New Mess'),
+        title: Text(_mess.id != null ? "Edit Mess" : "Create New Mess"),
       ),
       body: Stack(
         children: <Widget>[
@@ -63,6 +79,7 @@ class _CreateMessScreenState extends State<CreateMessScreen> {
               padding: EdgeInsets.all(20),
               children: <Widget>[
                 TextFormField(
+                  initialValue: _mess.name,
                   decoration: InputDecoration(
                     labelText: 'Mess Name',
                     hintText: 'ex: The White House',
@@ -78,6 +95,7 @@ class _CreateMessScreenState extends State<CreateMessScreen> {
                 ),
                 SizedBox(height: 20),
                 TextFormField(
+                  initialValue: _mess.location,
                   decoration: InputDecoration(
                     labelText: 'Location',
                     hintText: 'ex: Panthapath, Dhaka',
@@ -85,7 +103,7 @@ class _CreateMessScreenState extends State<CreateMessScreen> {
                   ),
                   validator: (val) {
                     if (val.isEmpty) {
-                      return 'Mess name is required!';
+                      return 'Mess location is required!';
                     }
                     return null;
                   },

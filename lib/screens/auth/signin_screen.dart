@@ -19,8 +19,8 @@ class _SigninScreenState extends State<SigninScreen> {
 
   bool _isLoading = false;
 
-  String _email = 'mhsagor91@gmail.com';
-  String _password = 'password';
+  String _email = '';
+  String _password = '';
 
   Future<void> _saveForm() async {
     if (!_form.currentState.validate()) {
@@ -35,7 +35,10 @@ class _SigninScreenState extends State<SigninScreen> {
     } on HttpException catch (error) {
       showHttpError(context, error);
     } catch (error) {
-      showHttpError(context, 'Something went wrong, could not sign you in!');
+      showHttpError(
+        context,
+        new HttpException('Something went wrong, could not sign you in!'),
+      );
     }
     setState(() {
       _isLoading = false;

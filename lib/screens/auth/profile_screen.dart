@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/user.dart';
 import 'package:messman/screens/tabs/tasks_tab.dart';
 import 'package:messman/services/auth_service.dart';
 import 'package:messman/services/deposits_service.dart';

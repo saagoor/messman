@@ -1,5 +1,7 @@
-const String baseUrl = 'https://messman.mhsagor.site/api/';
-// const String baseUrl = 'http://10.0.2.2:8000/api/';
+// const String baseUrl = 'https://messman.mhsagor.site/api/';
+const String baseUrl = 'http://10.0.2.2:8000/api/';
+// const String baseUrl = 'http://192.168.0.100:8000/api/';
+// const String baseUrl = 'http://127.0.0.1:8000/api/';
 
 class Currency {
   String name;

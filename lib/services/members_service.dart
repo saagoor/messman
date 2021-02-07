@@ -4,8 +4,9 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:messman/constants.dart';
 import 'package:messman/models/http_exception.dart';
-import 'package:messman/models/models.dart';
+import 'package:messman/models/transaction.dart';
 import 'package:http/http.dart' as http;
+import 'package:messman/models/user.dart';
 import 'package:messman/services/helpers.dart';
 
 class MembersService with ChangeNotifier {
@@ -65,8 +66,6 @@ class MembersService with ChangeNotifier {
 
   Future<void> addMember(User user, File image) async {
     try {
-      // print(image.path);
-      // return null;
       final Uri uri = Uri.parse(baseUrl + 'members');
       var request = http.MultipartRequest('POST', uri);
       request.headers.addAll(httpHeader(token, hasFile: true));
