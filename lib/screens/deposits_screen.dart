@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messman/screens/add_deposit_screen.dart';
+import 'package:messman/screens/save_deposit_screen.dart';
 import 'package:messman/services/deposits_service.dart';
 import 'package:messman/includes/helpers.dart';
 import 'package:messman/widgets/deposits_list_view.dart';
@@ -34,7 +34,7 @@ class DepositsFAB extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () async {
         final isSuccess =
-            await Navigator.of(context).pushNamed(AddDepositScreen.routeName);
+            await Navigator.of(context).pushNamed(SaveDepositScreen.routeName);
         if (isSuccess == true) {
           Scaffold.of(context).showSnackBar(
               SnackBar(content: Text('Deposit added successfully!')));

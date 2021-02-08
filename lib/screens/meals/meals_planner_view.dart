@@ -25,7 +25,8 @@ class MealsPlannerView extends StatelessWidget {
       child: ListView(
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
             child: SectionTitle(
               icon: Icons.insert_invitation,
               title: DateFormat.yMMMMEEEEd().format(dateTime),
@@ -35,19 +36,17 @@ class MealsPlannerView extends StatelessWidget {
             value: dateTime,
             child: TodaysMeals(alwaysShowSetBtn: true, dateTime: dateTime),
           ),
+          SizedBox(height: 10),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.check_circle_outline),
-                    SizedBox(width: 8),
-                    Text('Meal Controller'),
-                  ],
+                SectionTitle(
+                  icon: Icons.check_circle_outline,
+                  title: 'Meal Controller',
                 ),
-                SizedBox(height: 20),
+                // SizedBox(height: 10),
                 MealControllerTable(dateTime),
                 SizedBox(height: 50),
               ],

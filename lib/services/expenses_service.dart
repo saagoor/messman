@@ -69,6 +69,35 @@ class ExpensesService with ChangeNotifier {
     }
   }
 
+  Future<void> saveExpense(Expense expense) {
+    if (expense.id != null) {
+      return this.editExpense(expense);
+    }
+    return this.addExpense(expense);
+  }
+
+  Future<void> editExpense(Expense expense) async {
+    try {
+      final response = await http.put(
+        baseUrl + 'expenses/${expense.id}',
+        headers: httpHeader(token),
+        body: json.encode(expense),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final result = json.decode(response.body) as Map<String, dynamic>;
+        if (result != null && result['data'] != null) {
+          _items[_items.indexWhere((element) => element.id == expense.id)] =
+              Expense.fromJson(result['data']);
+          notifyListeners();
+        }
+      } else {
+        return handleHttpErrors(response);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
   Future<void> addExpense(Expense expense) async {
     try {
       final response = await http.post(

@@ -22,11 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isInit = false;
   bool _isLoading = false;
   int _currentIndex = 0;
+  MessService _messService;
 
   void _onAppStart() {
     if (0 != 1) return;
-    final currentMonth =
-        Provider.of<MessService>(context, listen: false).mess?.currentMonth;
+    final currentMonth = _messService.mess?.currentMonth;
     if (context != null &&
         currentMonth != null &&
         currentMonth.month < DateTime.now().month) {
@@ -70,29 +70,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadMessData() async {
-    final messService = Provider.of<MessService>(context);
-    if (!messService.isLoaded) {
-      _isLoading = true;
-      await messService.fetchAndSet().catchError((error) {
-        showHttpError(context, error);
+    _isLoading = true;
+    await Provider.of<MessService>(context, listen: false)
+        .fetchAndSet()
+        .catchError((error) {
+      showHttpError(context, error);
+    });
+    if (context != null) {
+      setState(() {
+        _isLoading = false;
       });
-      if (context != null) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
     }
   }
 
   @override
   void initState() {
     if (mounted) _onAppStart();
+
     super.initState();
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInit && !_messService.isLoaded) {
+      _loadMessData();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (!_isInit) {
+    _messService = Provider.of<MessService>(context);
+    if (!_isInit && !_messService.isLoaded) {
       _loadMessData();
       _isInit = true;
     }
@@ -157,8 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 2:
         return 'Tasks & Bazar Dates';
       default:
-        return Provider.of<MessService>(context, listen: false).mess?.name ??
-            'MessMan';
+        return _messService?.mess?.name ?? 'MessMan';
     }
   }
 

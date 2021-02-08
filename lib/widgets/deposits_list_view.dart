@@ -76,6 +76,9 @@ class DepositsListCard extends StatelessWidget {
             ),
           ],
           onSelected: (selected) {
+            if (selected == DepositActions.Edit) {
+              deposit.edit(context);
+            }
             if (selected == DepositActions.Delete) {
               deposit.delete(context);
             }

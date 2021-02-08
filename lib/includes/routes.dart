@@ -1,5 +1,5 @@
-import 'package:messman/screens/add_deposit_screen.dart';
-import 'package:messman/screens/add_expense_screen.dart';
+import 'package:messman/screens/save_deposit_screen.dart';
+import 'package:messman/screens/save_expense_screen.dart';
 import 'package:messman/screens/auth/edit_profile_screen.dart';
 import 'package:messman/screens/auth/forgot_password_screen.dart';
 import 'package:messman/screens/auth/profile_screen.dart';
@@ -32,8 +32,8 @@ final messManRoutes = {
   MealsTableViewScreen.routeName: (ctx) => MealsTableViewScreen(),
   SetMealScreen.routeName: (ctx) => SetMealScreen(),
   SaveTaskScreen.routeName: (ctx) => SaveTaskScreen(),
-  AddExpenseScreen.routeName: (ctx) => AddExpenseScreen(),
+  SaveExpenseScreen.routeName: (ctx) => SaveExpenseScreen(),
   DepositsScreen.routeName: (ctx) => DepositsScreen(),
-  AddDepositScreen.routeName: (ctx) => AddDepositScreen(),
+  SaveDepositScreen.routeName: (ctx) => SaveDepositScreen(),
   ChatScreen.routeName: (ctx) => ChatScreen(),
 };

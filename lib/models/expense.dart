@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:messman/includes/dialogs.dart';
 import 'package:messman/models/transaction.dart';
+import 'package:messman/screens/save_expense_screen.dart';
 import 'package:messman/services/expenses_service.dart';
 import 'package:provider/provider.dart';
 
@@ -44,5 +45,17 @@ class Expense extends Transaction {
       content: 'Are you sure you want to delete this expense?',
       successMessage: 'Expense deleted successfully!',
     );
+  }
+
+  void edit(BuildContext context) async {
+    final hasSaved = await Navigator.of(context).pushNamed(
+      SaveExpenseScreen.routeName,
+      arguments: this,
+    );
+    if (hasSaved == true) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(content: Text('Expense saved successfully!')),
+      );
+    }
   }
 }

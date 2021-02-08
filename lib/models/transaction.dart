@@ -25,4 +25,8 @@ class Transaction {
   void delete(BuildContext context) {
     print('Executing from parent transaction class');
   }
+
+  void edit(BuildContext context) async {
+    print('Executing from parent transaction class');
+  }
 }

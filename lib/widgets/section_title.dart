@@ -11,9 +11,12 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        Icon(icon, color: Colors.grey.shade700),
+        Icon(icon, color: Colors.grey.shade600, size: 30),
         SizedBox(width: 8),
-        Text(title),
+        Text(
+          title,
+          // style: Theme.of(context).textTheme.headline3,
+        ),
       ],
     );
   }

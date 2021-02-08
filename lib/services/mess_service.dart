@@ -17,14 +17,13 @@ import 'package:messman/includes/helpers.dart';
 class MessService with ChangeNotifier {
   final AuthService auth;
   MessService({@required this.auth, MessService prev}) {
-    if (prev != null) {
+    if (prev != null && prev.mess != null) {
       this._mess = prev.mess;
       this.expenses = prev.expenses;
       this.tasks = prev.tasks;
       this.members = prev.members;
       this.monthsMeals = prev.monthsMeals;
       this.deposits = prev.deposits;
-      this.isLoaded = true;
     }
   }
 
@@ -33,6 +32,11 @@ class MessService with ChangeNotifier {
 
   Mess get mess {
     return _mess;
+  }
+
+  set loaded(val) {
+    this.isLoaded = val;
+    notifyListeners();
   }
 
   List<Expense> expenses = [];

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messman/screens/add_expense_screen.dart';
+import 'package:messman/screens/save_expense_screen.dart';
 import 'package:messman/services/expenses_service.dart';
 import 'package:messman/widgets/expenses_list_view.dart';
 import 'package:messman/widgets/no_scaffold_fab.dart';
@@ -36,7 +36,7 @@ class _ExpensesTabState extends State<ExpensesTab> {
         NoScaffoldFAB(
           onPressed: () async {
             final hasSaved = await Navigator.of(context)
-                .pushNamed(AddExpenseScreen.routeName);
+                .pushNamed(SaveExpenseScreen.routeName);
             if (hasSaved == true) {
               Scaffold.of(context).showSnackBar(
                 SnackBar(content: Text('Expense added successfully!')),

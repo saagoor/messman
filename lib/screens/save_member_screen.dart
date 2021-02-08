@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:messman/models/user.dart';
 import 'package:messman/services/members_service.dart';
 import 'package:flutter/material.dart';
+import 'package:messman/services/mess_service.dart';
 import 'package:messman/widgets/network_circle_avatar.dart';
 import 'package:provider/provider.dart';
 import 'package:messman/widgets/image_capture.dart';
@@ -43,6 +44,7 @@ class _SaveMemberScreenState extends State<SaveMemberScreen> {
     try {
       await Provider.of<MembersService>(context, listen: false)
           .addMember(_member, _membersImage);
+      Provider.of<MessService>(context, listen: false).isLoaded = false;
       return Navigator.of(context).pop(true);
     } catch (error) {
       _showErrors(error.toString());

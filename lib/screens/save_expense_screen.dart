@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:messman/models/deposit.dart';
+import 'package:messman/models/expense.dart';
 import 'package:messman/services/auth_service.dart';
-import 'package:messman/services/deposits_service.dart';
+import 'package:messman/services/expenses_service.dart';
 import 'package:messman/includes/helpers.dart';
-import 'package:messman/services/members_service.dart';
 import 'package:messman/services/mess_service.dart';
 import 'package:messman/widgets/input_date_picker.dart';
 import 'package:messman/widgets/user/member_selector.dart';
 import 'package:provider/provider.dart';
 
-class AddDepositScreen extends StatefulWidget {
-  static const routeName = '/deposits/add';
+class SaveExpenseScreen extends StatefulWidget {
+  static const routeName = '/expenses/save';
+
   @override
-  _AddDepositScreenState createState() => _AddDepositScreenState();
+  _SaveExpenseScreenState createState() => _SaveExpenseScreenState();
 }
 
-class _AddDepositScreenState extends State<AddDepositScreen> {
+class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
   final _form = GlobalKey<FormState>();
   final _amountFocusNode = FocusNode();
 
   final now = DateTime.now();
   bool _isLoading = false;
 
-  Deposit _deposit = Deposit(
+  Expense _expense = Expense(
+    shortDetails: '',
+    type: 'shopping',
     dateTime: DateTime.now(),
+    fromSelfPocket: true,
   );
 
   void _saveForm() async {
@@ -32,9 +35,9 @@ class _AddDepositScreenState extends State<AddDepositScreen> {
     setState(() {
       _isLoading = true;
     });
-    // Save Deposit
-    await Provider.of<DepositsService>(context, listen: false)
-        .addDeposit(_deposit)
+    // Save expense
+    await Provider.of<ExpensesService>(context, listen: false)
+        .saveExpense(_expense)
         .then((value) {
       Navigator.of(context).pop(true);
     }).catchError((error) {
@@ -51,28 +54,30 @@ class _AddDepositScreenState extends State<AddDepositScreen> {
     }
     final oneMonthLater =
         currentMonth.add(Duration(days: lastDayOfMonth(currentMonth)));
-    if (_deposit.dateTime.isAfter(oneMonthLater)) {
-      return _deposit.dateTime;
+    if (_expense.dateTime.isAfter(oneMonthLater)) {
+      return _expense.dateTime;
     }
     return oneMonthLater;
   }
 
   @override
   Widget build(BuildContext context) {
-    final messService = Provider.of<MessService>(context);
-    final membersService = Provider.of<MembersService>(context);
-    final authService = Provider.of<AuthService>(context);
-    if (!membersService.isLoaded) {
-      membersService.fetchAndSet().catchError((error) {
-        showHttpError(context, error);
-      });
+    final passedExpense = ModalRoute.of(context).settings.arguments as Expense;
+    if (passedExpense != null) {
+      _expense = passedExpense;
     }
-    if (_deposit.memberId == null) {
-      _deposit.memberId = authService.user.id;
+
+    final messService = Provider.of<MessService>(context);
+    final authService = Provider.of<AuthService>(context);
+
+    if (_expense.memberId == null) {
+      _expense.memberId = authService.user.id;
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Add New Deposit')),
+      appBar: AppBar(
+        title: Text((_expense.id != null ? 'Edit' : 'Add New') + ' Expense'),
+      ),
       body: Stack(
         children: <Widget>[
           Form(
@@ -80,34 +85,90 @@ class _AddDepositScreenState extends State<AddDepositScreen> {
             child: ListView(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
               children: <Widget>[
+                SwitchListTile(
+                  value: _expense.fromSelfPocket,
+                  onChanged: (val) {
+                    setState(() {
+                      _expense.fromSelfPocket = val;
+                    });
+                  },
+                  title: Text('Add to Deposit'),
+                  subtitle: Text(
+                      'Enable this if the expense was spent from self pocket not from the mess\'s cash.'),
+                  isThreeLine: true,
+                ),
+                Row(
+                  children: <Widget>[
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: RadioListTile(
+                        value: 'shopping',
+                        groupValue: _expense.type,
+                        onChanged: (val) {
+                          setState(() {
+                            _expense.type = val;
+                          });
+                        },
+                        title: Text('Shopping'),
+                      ),
+                    ),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: RadioListTile(
+                        value: 'utility',
+                        groupValue: _expense.type,
+                        onChanged: (val) {
+                          setState(() {
+                            _expense.type = val;
+                          });
+                        },
+                        title: Text('Utility'),
+                      ),
+                    ),
+                  ],
+                ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Column(
                     children: <Widget>[
                       SizedBox(height: 10),
                       InputDatePicker(
-                        value: _deposit.dateTime,
+                        value: _expense.dateTime,
                         firstDate: messService.mess?.currentMonth,
                         lastDate: _getLastDate(messService.mess?.currentMonth),
                         onSelect: (val) {
                           setState(() {
-                            _deposit.dateTime = val;
+                            _expense.dateTime = val;
                           });
                         },
                       ),
                       SizedBox(height: 20),
                       MemberSelector(
-                        labelText: 'Deposited By',
-                        initialId: _deposit.memberId,
+                        labelText: 'Expended By',
+                        initialId: _expense.memberId,
                         onChanged: (int selectedMemberId) {
-                          _deposit.memberId = selectedMemberId;
+                          _expense.memberId = selectedMemberId;
                         },
                       ),
                       SizedBox(height: 20),
                       TextFormField(
+                        initialValue: _expense.shortDetails,
+                        decoration: InputDecoration(
+                          labelText: 'Short Details',
+                          hintText:
+                              'ex: ${_expense.type == 'shopping' ? 'Grocery & Vegetables' : 'Internet Bill'}',
+                          prefixIcon: Icon(Icons.info_outline),
+                        ),
+                        textInputAction: TextInputAction.next,
+                        onFieldSubmitted: (_) => FocusScope.of(context)
+                            .requestFocus(_amountFocusNode),
+                        onSaved: (val) => _expense.shortDetails = val,
+                      ),
+                      SizedBox(height: 20),
+                      TextFormField(
                         initialValue:
-                            (_deposit.amount != null) && (_deposit.amount > 0)
-                                ? _deposit.amount.toString()
+                            (_expense.amount != null) && (_expense.amount > 0)
+                                ? _expense.amount.toString()
                                 : '',
                         decoration: InputDecoration(
                           labelText: 'Amount',
@@ -125,7 +186,7 @@ class _AddDepositScreenState extends State<AddDepositScreen> {
                           }
                           return null;
                         },
-                        onSaved: (val) => _deposit.amount = int.parse(val),
+                        onSaved: (val) => _expense.amount = int.parse(val),
                         onFieldSubmitted: (_) => _saveForm(),
                       ),
                       SizedBox(height: 20),
@@ -134,7 +195,7 @@ class _AddDepositScreenState extends State<AddDepositScreen> {
                         width: double.infinity,
                         child: RaisedButton.icon(
                           icon: Icon(Icons.save),
-                          label: Text('Save Deposit'),
+                          label: Text('Save Expense'),
                           color: Theme.of(context).primaryColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),

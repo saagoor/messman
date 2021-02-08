@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:messman/screens/auth/forgot_password_screen.dart';
 import 'package:messman/screens/auth/signup_screen.dart';
-import 'package:messman/models/http_exception.dart';
 import 'package:messman/services/auth_service.dart';
 import 'package:messman/includes/helpers.dart';
 import 'package:provider/provider.dart';
@@ -32,12 +31,23 @@ class _SigninScreenState extends State<SigninScreen> {
     _form.currentState.save();
     try {
       await _auth.signIn(_email, _password);
-    } on HttpException catch (error) {
-      showHttpError(context, error);
     } catch (error) {
-      showHttpError(
-        context,
-        new HttpException('Something went wrong, could not sign you in!'),
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Oooops!'),
+          content: Text(error.toString()),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                if (context != null) {
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text('Okay'),
+            ),
+          ],
+        ),
       );
     }
     setState(() {
@@ -229,14 +239,15 @@ class _SigninScreenState extends State<SigninScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text('New here? '),
-                        GestureDetector(
+                        FlatButton(
                           child: Text(
                             'Sign Up',
                             style: TextStyle(
                               color: Theme.of(context).accentColor,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          onTap: () {
+                          onPressed: () {
                             Navigator.of(context)
                                 .pushNamed(SignupScreen.routeName);
                           },

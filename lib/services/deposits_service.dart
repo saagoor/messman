@@ -73,6 +73,35 @@ class DepositsService with ChangeNotifier {
     }
   }
 
+  Future<void> saveDeposit(Deposit deposit) {
+    if (deposit.id != null) {
+      return this.editDeposit(deposit);
+    }
+    return this.addDeposit(deposit);
+  }
+
+  Future<void> editDeposit(Deposit deposit) async {
+    try {
+      final response = await http.put(
+        baseUrl + 'deposits/${deposit.id}',
+        headers: httpHeader(token),
+        body: json.encode(deposit),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final result = json.decode(response.body) as Map<String, dynamic>;
+        if (result != null && result['data'] != null) {
+          _items[_items.indexWhere((element) => element.id == deposit.id)] =
+              Deposit.fromJson(result['data']);
+          notifyListeners();
+        }
+      } else {
+        return handleHttpErrors(response);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
   Future<void> addDeposit(Deposit deposit) async {
     try {
       final response = await http.post(

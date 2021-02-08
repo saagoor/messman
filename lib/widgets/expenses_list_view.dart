@@ -130,6 +130,7 @@ class ExpenseListItem extends StatelessWidget {
               ],
               onSelected: (selectedItem) async {
                 if (selectedItem == ExpenseActions.Edit) {
+                  expense.edit(context);
                 } else if (selectedItem == ExpenseActions.Delete) {
                   expense.delete(context);
                 }
@@ -142,4 +143,7 @@ class ExpenseListItem extends StatelessWidget {
   }
 }
 
-enum ExpenseActions { Edit, Delete }
+enum ExpenseActions {
+  Edit,
+  Delete,
+}

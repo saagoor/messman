@@ -30,7 +30,7 @@ void showDeleteDialog({
       ],
     ),
   );
-  if (confirmDelete) {
+  if (confirmDelete != null && confirmDelete) {
     deleteMethod().then((value) {
       if (context != null && value == true) {
         Scaffold.of(context).showSnackBar(
