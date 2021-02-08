@@ -1,17 +1,17 @@
-# mess
+# MessMan
 
-Mess management application.
+MessMan is a mobile application for managing bechelor mess.
 
-## Getting Started
+## Basic Info
 
-This project is a starting point for a Flutter application.
+This is a flutter project, it's backend is developed by Laravel. The backend is stored in a private repository for security purpose, if you want to check the backed project [DM me on messenger](https://web.facebook.com/messages/t/mhsaagoor) or email me at mhsagor91@gmail.com.
 
-A few resources to get you started if this is your first Flutter project:
+## Prototype
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Here is a [prototype preview](https://drive.google.com/file/d/1PI3FaaQkVKzaylvtLAtT9u8lUwOk2YZ9/view?usp=sharing) of MessMan.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# messman
+Here is the [APK File](https://drive.google.com/file/d/1ACGZrw-zPIfAYuUWU-c_zfsDAJFbuFJ9/view?usp=sharing)
+
+Please note that this not a stable release of my application, there might be unexpected bug or error.
+
+Thank you.
