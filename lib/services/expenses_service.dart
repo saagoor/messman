@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:messman/constants.dart';
 import 'package:messman/models/expense.dart';
-import 'package:messman/models/http_exception.dart';
 import 'package:http/http.dart' as http;
 import 'package:messman/includes/helpers.dart';
 
@@ -38,6 +36,14 @@ class ExpensesService with ChangeNotifier {
     notifyListeners();
   }
 
+  void reset({reload = false}) {
+    this._items = [];
+    this.isLoaded = false;
+    if (reload) {
+      notifyListeners();
+    }
+  }
+
   List<Expense> expensesByUser(int userId) {
     return _items.where((element) => element.memberId == userId).toList();
   }
@@ -62,10 +68,8 @@ class ExpensesService with ChangeNotifier {
           return handleHttpErrors(response);
         }
       }
-    } on SocketException catch (_) {
-      throw HttpException('Could not connect to the server!');
     } catch (error) {
-      throw HttpException('Something went wrong, could not load expenses!');
+      throw error;
     }
   }
 
@@ -114,10 +118,8 @@ class ExpensesService with ChangeNotifier {
       } else {
         return handleHttpErrors(response);
       }
-    } on SocketException catch (_) {
-      throw HttpException('Could not connect to the server!');
     } catch (error) {
-      throw HttpException('Something went wrong, Could not add expense!');
+      throw error;
     }
   }
 
@@ -134,10 +136,8 @@ class ExpensesService with ChangeNotifier {
       } else {
         handleHttpErrors(response);
       }
-    } on SocketException catch (_) {
-      throw HttpException('Could not connect to the server!');
     } catch (error) {
-      throw HttpException('Could not delete expense!');
+      throw error;
     }
     return false;
   }

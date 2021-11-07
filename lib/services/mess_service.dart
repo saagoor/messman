@@ -39,15 +39,27 @@ class MessService with ChangeNotifier {
     notifyListeners();
   }
 
+  set mess(Mess val) {
+    this._mess = val;
+  }
+
+  void reset({reload = false}) {
+    this._mess = null;
+    this.isLoaded = false;
+    if (reload) {
+      notifyListeners();
+    }
+  }
+
   List<Expense> expenses = [];
   List<Task> tasks = [];
   List<User> members = [];
-  Map<String, DaysMeal> monthsMeals = {};
+  Map<int, DaysMeal> monthsMeals = {};
   List<Deposit> deposits = [];
 
   Future<void> fetchAndSet() async {
     if (auth.user == null) {
-      throw HttpException('You\'re not authenticated!');
+      throw HttpException('You\'re not authenticated!', statusCode: 401);
     } else if (auth.user.messId == null) {
       throw HttpException('You haven\'t joined any Mess!');
     }
@@ -61,7 +73,6 @@ class MessService with ChangeNotifier {
         if (result != null || result['data'] != null) {
           setAllData(result['data']);
           isLoaded = true;
-          members.forEach((element) => print(element.name));
           notifyListeners();
         } else {
           throw HttpException(
@@ -119,9 +130,9 @@ class MessService with ChangeNotifier {
 
     // Setting daily meals data
     if (data['meals'] != null) {
-      Map<String, DaysMeal> tempMeals = {};
-      data['meals'].forEach((i, val) {
-        tempMeals.putIfAbsent(i, () => DaysMeal.fromJson(val));
+      Map<int, DaysMeal> tempMeals = {};
+      data['meals'].forEach((val) {
+        tempMeals.putIfAbsent(val['day'], () => DaysMeal.fromJson(val));
       });
       monthsMeals = tempMeals;
     }
@@ -237,6 +248,26 @@ class MessService with ChangeNotifier {
         if (result != null && result == 1) {
           _mess = null;
           auth.messId = null;
+          return true;
+        }
+      } else {
+        handleHttpErrors(response);
+      }
+      return false;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  Future<bool> closeMonth() async {
+    try {
+      final response = await http.post(
+        baseUrl + 'mess/close-month',
+        headers: httpHeader(auth.token),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final result = json.decode(response.body);
+        if (result != null && result == 1) {
           return true;
         }
       } else {

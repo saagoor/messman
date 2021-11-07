@@ -1,4 +1,5 @@
 import 'package:messman/services/auth_service.dart';
+import 'package:messman/services/chat_service.dart';
 import 'package:messman/services/deposits_service.dart';
 import 'package:messman/services/expenses_service.dart';
 import 'package:messman/services/foods_service.dart';
@@ -46,7 +47,7 @@ var messManProviders = [
     update: (ctx, auth, messData, prev) {
       return MealsService(
         token: auth.token,
-        monthsMeals: messData.monthsMeals,
+        monthsMealsPrev: messData.monthsMeals,
       );
     },
   ),
@@ -67,4 +68,11 @@ var messManProviders = [
         FoodsService(token: auth.token, prevItems: prev.items),
   ),
   ChangeNotifierProvider.value(value: SettingsService()),
+  ChangeNotifierProxyProvider<AuthService, ChatService>(
+    create: (ctx) => ChatService(token: ''),
+    update: (ctx, auth, prev) => ChatService(
+      token: auth.token,
+      messId: auth.user?.messId,
+    ),
+  ),
 ];

@@ -22,8 +22,8 @@ class _SaveTaskScreenState extends State<SaveTaskScreen> {
   bool _isLoading = false;
 
   Task task = Task(
-    title: 'Test Task 1',
-    instruction: 'Lorem ipsum doler sit ammet.',
+    title: '',
+    instruction: '',
     dateTime: DateTime.now(),
   );
   TimeOfDay tasksTime;

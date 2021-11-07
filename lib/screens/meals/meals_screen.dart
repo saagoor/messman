@@ -1,22 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:messman/screens/meals/add_guest_meal.dart';
+import 'package:messman/includes/dialogs.dart';
+import 'package:messman/includes/helpers.dart';
 import 'package:messman/screens/meals/meals_planner_view.dart';
 import 'package:messman/screens/meals/meals_table_view_screen.dart';
+import 'package:messman/services/meals_service.dart';
+import 'package:messman/services/mess_service.dart';
+import 'package:provider/provider.dart';
 
 class MealsScreen extends StatelessWidget {
   static const routeName = '/meals';
 
   Widget build(BuildContext context) {
+    monthEndsClosingAlert(context);
+    final currentMonth = Provider.of<MessService>(
+          context,
+          listen: false,
+        ).mess?.currentMonth ??
+        DateTime.now();
     final now = DateTime.now();
-    int currentIndex = (now.day - 1);
+    final int lastDay = lastDayOfMonth(currentMonth);
+    int currentIndex =
+        (currentMonth.year == now.year && currentMonth.month == now.month)
+            ? (now.day - 1)
+            : lastDay - 1;
 
-    // Provider.of<MealsService>(context, listen: false)
-    //     .fetchAndSetMeals()
-    //     .catchError((error) => showHttpError(context, error));
+    Provider.of<MealsService>(context, listen: false)
+        .fetchAndSetMeals()
+        .catchError((error) => showHttpError(context, error));
 
     return DefaultTabController(
-      initialIndex: (now.day - 1),
-      length: lastDay(),
+      initialIndex: currentIndex,
+      length: lastDay,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -57,36 +71,19 @@ class MealsScreen extends StatelessWidget {
                 onTap: (tappedIndex) {
                   currentIndex = tappedIndex;
                 },
-                tabs: List.generate(
-                    lastDay(), (index) => Tab(text: '${index + 1}')).toList(),
+                tabs:
+                    List.generate(lastDay, (index) => Tab(text: '${index + 1}'))
+                        .toList(),
               ),
             ),
           ),
         ),
         body: TabBarView(
           children:
-              List.generate(lastDay(), (index) => MealsPlannerView(index + 1))
+              List.generate(lastDay, (index) => MealsPlannerView(index + 1))
                   .toList(),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.exposure_plus_1),
-          onPressed: () {
-            final dateTime = DateTime(now.year, now.month, currentIndex + 1);
-            showModalBottomSheet(
-              context: context,
-              builder: (ctx) => AddGuestMeal(date: dateTime),
-              shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(30))),
-            );
-          },
         ),
       ),
     );
-  }
-
-  int lastDay() {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month + 1, 0).day;
   }
 }

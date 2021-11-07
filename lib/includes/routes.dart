@@ -1,3 +1,4 @@
+import 'package:messman/screens/all_members_details_screen.dart';
 import 'package:messman/screens/save_deposit_screen.dart';
 import 'package:messman/screens/save_expense_screen.dart';
 import 'package:messman/screens/auth/edit_profile_screen.dart';
@@ -6,7 +7,7 @@ import 'package:messman/screens/auth/profile_screen.dart';
 import 'package:messman/screens/auth/signin_screen.dart';
 import 'package:messman/screens/auth/signup_screen.dart';
 import 'package:messman/screens/chat/chat_screen.dart';
-import 'package:messman/screens/close_month_screen.dart';
+import 'package:messman/screens/close_month/close_month_screen.dart';
 import 'package:messman/screens/deposits_screen.dart';
 import 'package:messman/screens/meals/meals_screen.dart';
 import 'package:messman/screens/meals/meals_table_view_screen.dart';
@@ -23,6 +24,7 @@ final messManRoutes = {
   ForgotPasswordScreen.routeName: (ctx) => ForgotPasswordScreen(),
   CreateMessScreen.routeName: (ctx) => CreateMessScreen(),
   CloseMonthScreen.routeName: (ctx) => CloseMonthScreen(),
+  AllMembersDetailsScreen.routeName: (ctx) => AllMembersDetailsScreen(),
   SettingsScreen.routeName: (ctx) => SettingsScreen(),
   ProfileScreen.routeName: (ctx) => ProfileScreen(),
   EditProfileScreen.routeName: (ctx) => EditProfileScreen(),

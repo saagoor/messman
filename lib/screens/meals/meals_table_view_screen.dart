@@ -16,7 +16,8 @@ class MealsTableViewScreen extends StatefulWidget {
 }
 
 class _MealsTableViewScreenState extends State<MealsTableViewScreen> {
-  DateTime dateTime = DateTime.now();
+  final DateTime dateTime = DateTime.now();
+  DateTime currentMonth;
   double _tableHeadHeight = 0;
   double _tableHeadOpacity = 0;
   ScrollController _scrollController = new ScrollController();
@@ -49,6 +50,9 @@ class _MealsTableViewScreenState extends State<MealsTableViewScreen> {
   Widget build(BuildContext context) {
     final membersData = Provider.of<MembersService>(context);
     final members = membersData.items;
+    currentMonth =
+        Provider.of<MessService>(context, listen: false)?.mess?.currentMonth ??
+            dateTime;
 
     return Scaffold(
       appBar: AppBar(
@@ -57,7 +61,7 @@ class _MealsTableViewScreenState extends State<MealsTableViewScreen> {
           children: <Widget>[
             Text('Meals Table', style: TextStyle(fontSize: 16)),
             Text(
-              DateFormat.yMMMM().format(dateTime),
+              DateFormat.yMMMM().format(currentMonth),
               style: TextStyle(fontSize: 12),
             ),
           ],
@@ -183,9 +187,8 @@ class _MealsTableViewScreenState extends State<MealsTableViewScreen> {
   }
 
   getRows(List<User> members) {
-    final int today = DateTime.now().day;
     List<TableRow> rows = [];
-    for (var i = 1; i <= lastDayOfMonth(null); i++) {
+    for (var i = 1; i <= lastDayOfMonth(currentMonth); i++) {
       rows.add(
         TableRow(
           decoration: BoxDecoration(
@@ -204,7 +207,8 @@ class _MealsTableViewScreenState extends State<MealsTableViewScreen> {
             ...members.map(
               (member) => Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: today < i
+                child: DateTime(currentMonth.year, currentMonth.month, i)
+                        .isAfter(dateTime)
                     ? Text('-', textAlign: TextAlign.center)
                     : MealsCell(day: i, memberId: member.id),
               ),
@@ -252,7 +256,7 @@ class MembersMealsCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final calcService = Provider.of<CalcService>(context);
-    final count = calcService.totalMealsCountOfUser(memberId);
+    final count = calcService.mealsCountOfUser(memberId);
     return Text(
       '${smartCount(count)}',
       style: TextStyle(fontWeight: FontWeight.bold),

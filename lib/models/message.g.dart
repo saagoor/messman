@@ -14,7 +14,9 @@ Message _$MessageFromJson(Map<String, dynamic> json) {
     sentAt: json['sent_at'] == null
         ? null
         : DateTime.parse(json['sent_at'] as String),
-    status: json['status'] as String,
+    status: json['status'] as String ?? 'sending',
+    type: json['type'] as String,
+    repliedTo: json['replied_to'] as int,
   );
 }
 
@@ -24,4 +26,6 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'text': instance.text,
       'sent_at': instance.sentAt?.toIso8601String(),
       'status': instance.status,
+      'type': instance.type,
+      'replied_to': instance.repliedTo,
     };

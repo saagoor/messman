@@ -4,16 +4,19 @@ import 'package:messman/models/food.dart';
 import 'package:messman/models/meal.dart';
 import 'package:messman/screens/meals/set_meal_screen.dart';
 import 'package:messman/services/auth_service.dart';
+import 'package:messman/widgets/amount.dart';
 import 'package:messman/widgets/network_circle_avatar.dart';
 import 'package:provider/provider.dart';
 
 class MealCard extends StatelessWidget {
   final Meal meal;
   final bool alwaysShowSetBtn;
+  final double mealCount;
 
   const MealCard({
     Key key,
     @required this.meal,
+    @required this.mealCount,
     this.alwaysShowSetBtn = false,
   }) : super(key: key);
 
@@ -74,42 +77,60 @@ class MealCard extends StatelessWidget {
               ],
             ),
             Align(
-                alignment: Alignment.bottomCenter,
-                child: (meal?.id == null || meal?.food == null)
-                    ? Text('')
-                    : Row(
-                        children: <Widget>[
-                          LikeButton(
-                            count: meal.dislikes,
-                            iconData: Icons.thumb_down,
-                            onPressed: () {
-                              meal.dislike(accessToken).catchError((error) {
-                                Scaffold.of(context).hideCurrentSnackBar();
-                                Scaffold.of(context).showSnackBar(
-                                  SnackBar(content: Text(error.toString())),
-                                );
-                              });
-                            },
-                            isActive:
-                                meal.likedByUser != null && !meal.likedByUser,
-                          ),
-                          SizedBox(width: 5),
-                          LikeButton(
-                            count: meal.likes,
-                            iconData: Icons.thumb_up,
-                            onPressed: () {
-                              meal.like(accessToken).catchError((error) {
-                                Scaffold.of(context).hideCurrentSnackBar();
-                                Scaffold.of(context).showSnackBar(
-                                  SnackBar(content: Text(error.toString())),
-                                );
-                              });
-                            },
-                            isActive:
-                                meal.likedByUser != null && meal.likedByUser,
-                          ),
-                        ],
-                      )),
+              alignment: Alignment.bottomCenter,
+              child: (meal?.id == null || meal?.food == null)
+                  ? Text('')
+                  : Row(
+                      children: <Widget>[
+                        LikeButton(
+                          count: meal.dislikes,
+                          iconData: Icons.thumb_down,
+                          onPressed: () {
+                            meal.dislike(accessToken).catchError((error) {
+                              Scaffold.of(context).hideCurrentSnackBar();
+                              Scaffold.of(context).showSnackBar(
+                                SnackBar(content: Text(error.toString())),
+                              );
+                            });
+                          },
+                          isActive:
+                              meal.likedByUser != null && !meal.likedByUser,
+                        ),
+                        SizedBox(width: 5),
+                        LikeButton(
+                          count: meal.likes,
+                          iconData: Icons.thumb_up,
+                          onPressed: () {
+                            meal.like(accessToken).catchError((error) {
+                              Scaffold.of(context).hideCurrentSnackBar();
+                              Scaffold.of(context).showSnackBar(
+                                SnackBar(content: Text(error.toString())),
+                              );
+                            });
+                          },
+                          isActive:
+                              meal.likedByUser != null && meal.likedByUser,
+                        ),
+                      ],
+                    ),
+            ),
+            Positioned(
+              right: 10,
+              top: 10,
+              child: Container(
+                height: 30,
+                width: 30,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).accentColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: FittedBox(
+                    child: Amount(mealCount, showCurrency: false),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

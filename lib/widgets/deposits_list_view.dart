@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:messman/includes/helpers.dart';
 import 'package:messman/models/expense.dart';
 import 'package:messman/models/transaction.dart';
 import 'package:messman/models/user.dart';
@@ -21,12 +22,31 @@ class DepositsListView extends StatelessWidget {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
       itemCount: deposits.length,
-      itemBuilder: (ctx, i) => Column(
-        children: <Widget>[
-          DepositsListCard(deposits[i]),
-          SizedBox(height: 6),
-        ],
-      ),
+      itemBuilder: (ctx, i) {
+        Widget append = SizedBox();
+        if (i == 0) {
+          append = Padding(
+            padding: const EdgeInsets.only(left: 5, bottom: 5, top: 5),
+            child: Text(getWeek(deposits[i].dateTime.day)),
+          );
+        } else {
+          if (weekNumber(deposits[i].dateTime) !=
+              weekNumber(deposits[i - 1].dateTime)) {
+            append = Padding(
+              padding: const EdgeInsets.only(left: 5, bottom: 5, top: 5),
+              child: Text(getWeek(deposits[i].dateTime.day)),
+            );
+          }
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            append,
+            DepositsListCard(deposits[i]),
+            SizedBox(height: 6),
+          ],
+        );
+      },
     );
   }
 }

@@ -41,6 +41,14 @@ class DepositsService with ChangeNotifier {
     notifyListeners();
   }
 
+  void reset({reload = false}) {
+    this._items = [];
+    this.isLoaded = false;
+    if (reload) {
+      notifyListeners();
+    }
+  }
+
   List<Transaction> depositsByUser(int userId) {
     return this.items.where((element) => element.memberId == userId).toList();
   }

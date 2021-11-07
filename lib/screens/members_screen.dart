@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:messman/includes/dialogs.dart';
 import 'package:messman/models/user.dart';
 import 'package:messman/screens/auth/profile_screen.dart';
 import 'package:messman/screens/save_member_screen.dart';
 import 'package:messman/includes/helpers.dart';
+import 'package:messman/services/auth_service.dart';
 import 'package:messman/services/members_service.dart';
 import 'package:messman/widgets/list_view_empty.dart';
 import 'package:messman/widgets/user/members_circle_avatar.dart';
@@ -81,6 +83,7 @@ class MemberListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthService>(context, listen: false);
     return Card(
       child: ListTile(
         leading: Padding(
@@ -93,33 +96,45 @@ class MemberListItem extends StatelessWidget {
             ),
           ),
         ),
-        title: Text(member.name),
-        subtitle: Text(member.email),
-        trailing: PopupMenuButton<MemberActions>(
-          itemBuilder: (ctx) => [
-            PopupMenuItem(
-              child: Text('Edit Member'),
-              value: MemberActions.Edit,
-            ),
-            PopupMenuItem(
-              child: Text('Remove Member'),
-              value: MemberActions.Remove,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(member.name),
+            Text(
+              member.isManager ? 'Mess Manager' : '',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
           ],
-          onSelected: (item) {
-            if (item == MemberActions.Remove) {
-              Provider.of<MembersService>(context, listen: false)
-                  .removeMember(member.id)
-                  .then((value) {
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Member has been removed.'),
-                  ),
-                );
-              });
-            }
-          },
         ),
+        subtitle: Text(member.email),
+        trailing: auth.user?.isManager != null && auth.user.isManager
+            ? PopupMenuButton<MemberActions>(
+                itemBuilder: (ctx) => [
+                  // PopupMenuItem(
+                  //   child: Text('Edit Member'),
+                  //   value: MemberActions.Edit,
+                  // ),
+                  PopupMenuItem(
+                    child: Text('Remove Member'),
+                    value: MemberActions.Remove,
+                  ),
+                ],
+                onSelected: (item) {
+                  if (item == MemberActions.Remove) {
+                    showConfirmationDialog(
+                      context: context,
+                      title: 'Removing Member!',
+                      deleteMethod: () =>
+                          Provider.of<MembersService>(context, listen: false)
+                              .removeMember(member.id),
+                      successMessage: 'Member has been removed.',
+                      confirmBtnText: 'Remove Member',
+                      content: 'Are you sure you want to remove that member?',
+                    );
+                  }
+                },
+              )
+            : null,
         contentPadding: EdgeInsets.zero,
         onTap: () {
           Navigator.of(context)

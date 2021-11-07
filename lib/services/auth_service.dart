@@ -214,4 +214,27 @@ class AuthService with ChangeNotifier {
       throw error;
     }
   }
+
+  Future<String> resetPassword(String email) async {
+    try {
+      final response = await http.post(
+        baseUrl + 'forgot-password',
+        body: json.encode({'email': email}),
+        headers: httpHeader(_token),
+      );
+
+      if (response.statusCode == 200) {
+        print(response.body);
+        final result = json.decode(response.body);
+        if (result != null && result['message'] != null) {
+          return result['message'];
+        }
+      } else {
+        handleHttpErrors(response);
+      }
+      return 'Success';
+    } catch (error) {
+      throw error;
+    }
+  }
 }

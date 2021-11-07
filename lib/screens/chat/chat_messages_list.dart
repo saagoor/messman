@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:messman/models/message.dart';
 import 'package:messman/screens/chat/message_card.dart';
+import 'package:messman/services/chat_service.dart';
+import 'package:provider/provider.dart';
 
 class ChatMessagesList extends StatelessWidget {
   final ScrollController controller;
+
   ChatMessagesList({this.controller});
 
   @override
   Widget build(BuildContext context) {
-    List<Message> messages = [];
-    for (int i = 0; i < 20; i++) {
-      messages.add(
-        Message(
-          id: i,
-          text:
-              '${i % 2 == 0 ? 'Lorem Ipsum ' : 'Dolar sit mmet'} adipisicing elit. Asperiores, reiciendis $i ',
-          senderId: (i / 10).round(),
-          sentAt: DateTime.now(),
-        ),
-      );
-    }
+    final chat = Provider.of<ChatService>(context);
+    final List<Message> messages = chat.messages;
+
+    print('Rebuilding chat msg list');
 
     return ListView.builder(
+      reverse: true,
       controller: controller,
       padding: const EdgeInsets.all(20),
       shrinkWrap: true,
@@ -31,7 +27,7 @@ class ChatMessagesList extends StatelessWidget {
           message: messages[i],
         );
 
-        if (i == messages.length - 1) {
+        if (i == 0) {
           return Column(
             children: <Widget>[
               card,

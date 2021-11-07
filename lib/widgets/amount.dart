@@ -5,8 +5,14 @@ class Amount extends StatelessWidget {
   final double amount;
   final double fontSize;
   final FontWeight fontWeight;
+  final bool showCurrency;
 
-  Amount(this.amount, {this.fontSize, this.fontWeight});
+  Amount(
+    this.amount, {
+    this.fontSize,
+    this.fontWeight,
+    this.showCurrency = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +28,8 @@ class Amount extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          UsersCurrency(),
+          if (showCurrency)
+            UsersCurrency(fontSize: fontSize != null ? fontSize * 0.7 : 10),
           Text(
             '$amountStr',
             style: TextStyle(
@@ -36,7 +43,7 @@ class Amount extends StatelessWidget {
               amountFraction,
               style: TextStyle(
                 fontWeight: fontWeight,
-                fontSize: fontSize != null ? fontSize - 4 : 10,
+                fontSize: fontSize != null ? fontSize * 0.7 : 10,
                 color: amount < 0 ? Theme.of(context).errorColor : null,
               ),
             )

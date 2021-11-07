@@ -1,21 +1,24 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 class ChatForm extends StatefulWidget {
-  final ScrollController controller;
-  ChatForm({this.controller});
+  final Function callback;
+  ChatForm({this.callback});
 
   @override
   _ChatFormState createState() => _ChatFormState();
 }
 
 class _ChatFormState extends State<ChatForm> {
+  final msgController = TextEditingController();
   bool isFocused = false;
+  @override
+  void dispose() {
+    msgController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    print('build');
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Container(
@@ -32,6 +35,7 @@ class _ChatFormState extends State<ChatForm> {
         child: TextField(
           maxLines: 3,
           minLines: 1,
+          controller: msgController,
           decoration: InputDecoration(
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
@@ -61,13 +65,15 @@ class _ChatFormState extends State<ChatForm> {
             ),
             suffixIcon: IconButton(
               iconSize: 30,
-              icon: Icon(isFocused ? Icons.send : Icons.insert_emoticon),
+              icon: Icon(msgController.text.trim().isNotEmpty
+                  ? Icons.send
+                  : Icons.insert_emoticon),
               onPressed: () {
-                if (isFocused) {
-                  _sendMessage().catchError((error) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(content: Text(error.toString())),
-                    );
+                if (msgController.text.trim().isNotEmpty) {
+                  widget.callback(msgController.text);
+                  msgController.text = '';
+                  setState(() {
+                    isFocused = !isFocused;
                   });
                 } else {
                   // show emojis
@@ -90,38 +96,5 @@ class _ChatFormState extends State<ChatForm> {
         ),
       ),
     );
-  }
-
-  Future<void> _sendMessage() async {
-    if ((widget.controller.position.maxScrollExtent -
-            widget.controller.position.pixels) <
-        (300)) {
-      Timer(Duration(milliseconds: 200), () => _scrollToBottom());
-    }
-  }
-
-  void _scrollToBottom() {
-    widget.controller.animateTo(
-      widget.controller.position.maxScrollExtent + 60,
-      duration: Duration(milliseconds: 300),
-      curve: Curves.bounceIn,
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    Timer(
-      Duration(milliseconds: 50),
-      () => widget.controller.jumpTo(
-        widget.controller.position.maxScrollExtent + 50,
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    widget.controller.dispose();
-    super.dispose();
   }
 }

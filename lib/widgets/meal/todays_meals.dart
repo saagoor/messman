@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:messman/screens/meals/meal_card.dart';
+import 'package:messman/services/calc_service.dart';
 import 'package:messman/services/meals_service.dart';
 import 'package:messman/services/mess_service.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ class TodaysMeals extends StatelessWidget {
   Widget build(BuildContext context) {
     final mealsService = Provider.of<MealsService>(context);
     final messService = Provider.of<MessService>(context);
+    final calcService = Provider.of<CalcService>(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -27,17 +29,20 @@ class TodaysMeals extends StatelessWidget {
             MealCard(
               meal: mealsService.breakfast(dateTime),
               alwaysShowSetBtn: alwaysShowSetBtn,
+              mealCount: calcService.mealsCountOfPeriod(dateTime, 'breakfast'),
             ),
             SizedBox(width: 10),
           ],
           MealCard(
             meal: mealsService.lunch(dateTime),
             alwaysShowSetBtn: alwaysShowSetBtn,
+            mealCount: calcService.mealsCountOfPeriod(dateTime, 'lunch'),
           ),
           SizedBox(width: 10),
           MealCard(
             meal: mealsService.dinner(dateTime),
             alwaysShowSetBtn: alwaysShowSetBtn,
+            mealCount: calcService.mealsCountOfPeriod(dateTime, 'dinner'),
           ),
         ],
       ),

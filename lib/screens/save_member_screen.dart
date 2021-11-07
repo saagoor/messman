@@ -23,9 +23,9 @@ class _SaveMemberScreenState extends State<SaveMemberScreen> {
   File _membersImage;
 
   User _member = User(
-    name: 'Test Member',
-    phone: '01775755272',
-    email: 'test@gmail.com',
+    name: '',
+    phone: '',
+    email: '',
     imageUrl: '',
     // imageUrl: 'https://fakeimg.pl/440x320/',
   );

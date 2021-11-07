@@ -1,7 +1,8 @@
-// const String baseUrl = 'https://messman.mhsagor.site/api/';
-const String baseUrl = 'http://10.0.2.2:8000/api/';
-// const String baseUrl = 'http://192.168.0.100:8000/api/';
-// const String baseUrl = 'http://127.0.0.1:8000/api/';
+import 'package:flutter/foundation.dart';
+
+const String domain =
+    kReleaseMode ? 'https://messman.sagor.pro/' : 'http://10.0.2.2:8000/';
+const String baseUrl = domain + 'api/';
 
 class Currency {
   String name;
@@ -21,3 +22,8 @@ List<Currency> currencies = [
   Currency('Yuan', '元'),
   Currency('Dong', '₫'),
 ];
+
+const PUSHER_APP_ID = '1023238';
+const PUSHER_APP_KEY = '6c275fca4328cef22290';
+const PUSHER_APP_SECRET = '480bc59edac47a45fed9';
+const PUSHER_APP_CLUSTER = 'ap2';

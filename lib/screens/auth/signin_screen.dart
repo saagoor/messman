@@ -168,18 +168,16 @@ class _SigninScreenState extends State<SigninScreen> {
                               _password = value;
                             },
                           ),
-                          SizedBox(height: 16),
                           Align(
                             alignment: Alignment.centerRight,
-                            child: GestureDetector(
+                            child: FlatButton(
                               child: Text('Forgot Password?'),
-                              onTap: () {
+                              onPressed: () {
                                 Navigator.of(context)
                                     .pushNamed(ForgotPasswordScreen.routeName);
                               },
                             ),
                           ),
-                          SizedBox(height: 16),
                           SizedBox(
                             height: 45,
                             width: double.infinity,
@@ -189,7 +187,7 @@ class _SigninScreenState extends State<SigninScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              color: Color(0xff2c2d35),
+                              color: Theme.of(context).primaryColor,
                               textColor: Colors.white,
                             ),
                           ),
@@ -238,7 +236,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text('New here? '),
+                        Text('New here?'),
                         FlatButton(
                           child: Text(
                             'Sign Up',

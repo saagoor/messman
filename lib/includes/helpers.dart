@@ -9,11 +9,12 @@ import 'package:messman/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
 int lastDayOfMonth(DateTime dateTime) {
-  final now = dateTime ?? DateTime.now();
-  return DateTime(now.year, now.month + 1, 0).day;
+  dateTime = dateTime ?? DateTime.now();
+  return DateTime(dateTime.year, dateTime.month + 1, 0).day;
 }
 
 bool canOnOffMeal(User member, MembersMeal meal) {
+  print(DateTime.now());
   if (member == null || meal == null) {
     return false;
   }
@@ -48,6 +49,18 @@ extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${this.substring(1)}";
   }
+}
+
+bool isCurrentMonthExpiring(DateTime currentMonth) {
+  final now = DateTime.now();
+  return currentMonth.isBefore(DateTime(now.year, now.month, 0)) ||
+      now.isAfter(DateTime(currentMonth.year, currentMonth.month,
+          (lastDayOfMonth(currentMonth) - 2)));
+}
+
+bool isCurrentMonthExpired(DateTime currentMonth) {
+  final now = DateTime.now();
+  return currentMonth.isBefore(DateTime(now.year, now.month, 0));
 }
 
 void showHttpError(BuildContext context, error, {String title}) {
@@ -88,6 +101,7 @@ void showHttpSnackbarError(BuildContext context, Exception error) {
 void handleHttpErrors(http.Response response) {
   final Map<String, dynamic> result = json.decode(response.body);
   if (response.statusCode == 404) {
+    print(result);
     throw HttpException(
       'Error: 404! ' + result['message'] ?? '',
       statusCode: response.statusCode,
@@ -139,7 +153,7 @@ void handleHttpErrors(http.Response response) {
 }
 
 Map<String, String> httpHeader(String token, {bool hasFile = false}) => {
-      'Content-type': !hasFile ? 'application/json' : 'multipart/form-data',
+      'Content-Type': !hasFile ? 'application/json' : 'multipart/form-data',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     };

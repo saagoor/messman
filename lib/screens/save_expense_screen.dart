@@ -26,7 +26,7 @@ class _SaveExpenseScreenState extends State<SaveExpenseScreen> {
     shortDetails: '',
     type: 'shopping',
     dateTime: DateTime.now(),
-    fromSelfPocket: true,
+    fromSelfPocket: false,
   );
 
   void _saveForm() async {

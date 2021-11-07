@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:messman/screens/chat/chat_screen.dart';
-import 'package:messman/screens/close_month_screen.dart';
+import 'package:messman/includes/dialogs.dart';
 import 'package:messman/screens/meals/meals_screen.dart';
 import 'package:messman/screens/tabs/expenses_tab.dart';
 import 'package:messman/screens/tabs/overview_tab.dart';
@@ -9,6 +7,7 @@ import 'package:messman/screens/tabs/tasks_tab.dart';
 import 'package:messman/includes/helpers.dart';
 import 'package:messman/services/mess_service.dart';
 import 'package:messman/widgets/app_drawer.dart';
+import 'package:messman/widgets/chat_button.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,51 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = false;
   int _currentIndex = 0;
   MessService _messService;
-
-  void _onAppStart() {
-    if (0 != 1) return;
-    final currentMonth = _messService.mess?.currentMonth;
-    if (context != null &&
-        currentMonth != null &&
-        currentMonth.month < DateTime.now().month) {
-      Future.delayed(Duration(seconds: 0)).then((value) {
-        showModalBottomSheet(
-          context: context,
-          builder: (ctx) => Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  '${DateFormat.yMMMM().format(currentMonth)} is over!',
-                  style: TextStyle(fontSize: 20),
-                ),
-                SizedBox(height: 10),
-                Text('Ready to close the month yet?'),
-                SizedBox(height: 20),
-                FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushNamed(CloseMonthScreen.routeName);
-                  },
-                  child: Text('Close Month'),
-                  color: Theme.of(context).primaryColor,
-                ),
-              ],
-            ),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
-            ),
-          ),
-          // backgroundColor: Theme.of(context).primaryColorLight,
-        );
-      });
-    }
-  }
 
   void _loadMessData() async {
     _isLoading = true;
@@ -84,18 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  void initState() {
-    if (mounted) _onAppStart();
-
-    super.initState();
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_isInit && !_messService.isLoaded) {
       _loadMessData();
     }
+    if (mounted) monthEndsClosingAlert(context);
   }
 
   @override
@@ -110,14 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(_theTitle()),
         actions: <Widget>[
-          IconButton(
-            icon: Image.asset(
-              'assets/images/chat.png',
-            ),
-            onPressed: () {
-              Navigator.of(context).pushNamed(ChatScreen.routeName);
-            },
-          )
+          ChatButton(),
+          SizedBox(width: 8),
         ],
       ),
       drawer: AppDrawer(),
@@ -151,7 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _tabOnTap(index) {
     if (index == 3) {
-      Navigator.of(context).pushNamed(MealsScreen.routeName);
+      Navigator.of(context).pushNamed(MealsScreen.routeName).then((value) {
+        setState(() {});
+      });
       return;
     }
     setState(() {

@@ -39,9 +39,9 @@ class CalcService with ChangeNotifier {
     return messServ.mess?.breakfastSize ?? 1;
   }
 
-  int get userId {
-    return auth.user.id ?? 0;
-  }
+  // int get userId {
+  //   return auth.user.id ?? 0;
+  // }
 
   double get mealsCount {
     return mealsServ.membersMealsOfMonth
@@ -54,11 +54,7 @@ class CalcService with ChangeNotifier {
     });
   }
 
-  double get mealsCountOfUser {
-    return totalMealsCountOfUser(userId);
-  }
-
-  double totalMealsCountOfUser(int userId) {
+  double mealsCountOfUser(int userId) {
     double count = mealsServ.membersMealsOfMonth
         .where((element) =>
             element.memberId == userId && element.date.isBefore(DateTime.now()))
@@ -74,11 +70,34 @@ class CalcService with ChangeNotifier {
     return count;
   }
 
+  double mealsCountOfPeriod(DateTime dateTime, String period) {
+    if (dateTime == null) dateTime = DateTime.now();
+    return mealsServ.membersMealsOfMonth
+        .where((element) =>
+            element.date.year == dateTime.year &&
+            element.date.month == dateTime.month &&
+            element.date.day == dateTime.day)
+        .fold(0, (prevValue, element) {
+      switch (period) {
+        case 'breakfast':
+          if (element.breakfast) prevValue += breakfastSize;
+          break;
+        case 'lunch':
+          if (element.lunch) prevValue++;
+          break;
+        case 'dinner':
+          if (element.dinner) prevValue++;
+          break;
+      }
+      return prevValue;
+    });
+  }
+
   double get depositTotal {
     return depo.items.fold(0, (prevVal, element) => prevVal + element.amount);
   }
 
-  double get depositTotalOfUser {
+  double depositTotalOfUser(int userId) {
     return depo
         .depositsByUser(userId)
         .fold(0, (previousValue, element) => previousValue + element.amount);
@@ -93,8 +112,18 @@ class CalcService with ChangeNotifier {
         .fold(0, (previousValue, element) => previousValue + element.amount);
   }
 
-  double get expenseTotalOfUser {
-    return (mealRate * mealsCountOfUser) + utilsAvg;
+  double get shoppingExpenseTotal {
+    return expen.shoppings
+        .fold(0, (previousValue, element) => previousValue + element.amount);
+  }
+
+  double get utilityExpenseTotal {
+    return expen.utilities
+        .fold(0, (previousValue, element) => previousValue + element.amount);
+  }
+
+  double expenseTotalOfUser(int userId) {
+    return (mealRate * mealsCountOfUser(userId)) + utilsAvg;
   }
 
   double get mealRate {
@@ -105,7 +134,7 @@ class CalcService with ChangeNotifier {
     return depositTotal - expen.total;
   }
 
-  double get balanceOfUser {
-    return depositTotalOfUser - expenseTotalOfUser;
+  double balanceOfUser(int userId) {
+    return depositTotalOfUser(userId) - expenseTotalOfUser(userId);
   }
 }

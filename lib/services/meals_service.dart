@@ -13,39 +13,44 @@ class MealsService with ChangeNotifier {
   final String token;
   MealsService({
     this.token,
-    monthsMeals,
+    monthsMealsPrev,
   }) {
-    if (monthsMeals != null && monthsMeals.length > 0) {
-      this.monthsMeals = monthsMeals;
+    if (monthsMealsPrev != null && monthsMealsPrev.length > 0) {
+      this.monthsMeals = monthsMealsPrev;
       isLoaded = true;
     }
   }
 
   bool isLoaded = false;
 
-  Map<String, DaysMeal> monthsMeals = {};
+  Map<int, DaysMeal> monthsMeals = {};
+
+  void reset({reload = false}) {
+    this.monthsMeals = {};
+    this.isLoaded = false;
+    if (reload) {
+      notifyListeners();
+    }
+  }
 
   List<MembersMeal> membersMeals(DateTime date) {
-    return monthsMeals[DateFormat('yyyy-MM-dd').format(date)]?.membersMeals ??
-        [];
+    return monthsMeals[date.day]?.membersMeals ?? [];
   }
 
   Meal breakfast(DateTime date) {
     if (date == null) date = DateTime.now();
-    return monthsMeals[DateFormat('yyyy-MM-dd').format(date)]?.breakfast ??
+    return monthsMeals[date.day]?.breakfast ??
         Meal(type: 'breakfast', date: date);
   }
 
   Meal lunch(DateTime date) {
     if (date == null) date = DateTime.now();
-    return monthsMeals[DateFormat('yyyy-MM-dd').format(date)]?.lunch ??
-        Meal(type: 'lunch', date: date);
+    return monthsMeals[date.day]?.lunch ?? Meal(type: 'lunch', date: date);
   }
 
   Meal dinner(DateTime date) {
     if (date == null) date = DateTime.now();
-    return monthsMeals[DateFormat('yyyy-MM-dd').format(date)]?.dinner ??
-        Meal(type: 'dinner', date: date);
+    return monthsMeals[date.day]?.dinner ?? Meal(type: 'dinner', date: date);
   }
 
   List<MembersMeal> get membersMealsOfMonth {
@@ -80,9 +85,9 @@ class MealsService with ChangeNotifier {
   void processMonthsMealsData(http.Response response) {
     final result = json.decode(response.body) as Map<String, dynamic>;
     if (result != null && result['data'] != null) {
-      Map<String, DaysMeal> tempMeals = {};
-      result['data'].forEach((i, val) {
-        tempMeals.putIfAbsent(i, () => DaysMeal.fromJson(val));
+      Map<int, DaysMeal> tempMeals = {};
+      result['data'].forEach((val) {
+        tempMeals.putIfAbsent(val['day'], () => DaysMeal.fromJson(val));
       });
       monthsMeals = tempMeals;
       notifyListeners();
@@ -138,17 +143,15 @@ class MealsService with ChangeNotifier {
           'date': DateFormat('yyyy-MM-dd').format(date),
         }),
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final result = json.decode(response.body) as Map<String, dynamic>;
         if (result != null && result['data'] != null) {
-          if (!monthsMeals.containsKey(DateFormat('yyyy-MM-dd').format(date))) {
+          if (!monthsMeals.containsKey(date.day)) {
             // Jodi ei diner kono meal na thake tahole age initialize kore nitese
-            monthsMeals[DateFormat('yyyy-MM-dd').format(date)] = new DaysMeal();
+            monthsMeals[date.day] = new DaysMeal();
           }
           result['data'].forEach((item) {
-            monthsMeals[DateFormat('yyyy-MM-dd').format(date)]
-                .membersMeals
-                .add(MembersMeal.fromJson(item));
+            monthsMeals[date.day].membersMeals.add(MembersMeal.fromJson(item));
           });
           notifyListeners();
         } else {

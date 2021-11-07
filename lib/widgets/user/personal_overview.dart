@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:messman/services/auth_service.dart';
 import 'package:messman/services/calc_service.dart';
 import 'package:messman/widgets/amount.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ class PersonalOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final calc = Provider.of<CalcService>(context);
+    final authService = Provider.of<AuthService>(context);
 
     return Wrap(
       spacing: 10,
@@ -18,21 +20,22 @@ class PersonalOverview extends StatelessWidget {
       children: <Widget>[
         OverviewCircle(
           title: 'Deposit',
-          amount: calc.depositTotalOfUser,
+          amount: calc.depositTotalOfUser(authService.user.id),
         ),
         OverviewCircle(
           title: 'Total Meal',
-          amount: calc.mealsCountOfUser,
+          amount: calc.mealsCountOfUser(authService.user.id),
           notCurrency: true,
         ),
         OverviewCircle(
           title: 'Expense',
-          amount: calc.expenseTotalOfUser, // mealsCost + utilsCost = expense
+          amount: calc.expenseTotalOfUser(
+              authService.user.id), // mealsCost + utilsCost = expense
         ),
         OverviewCircle(
           title: 'Balance',
-          amount:
-              calc.balanceOfUser, // deposit - mealsCost - utilsCost = balance
+          amount: calc.balanceOfUser(
+              authService.user.id), // deposit - mealsCost - utilsCost = balance
         ),
       ],
     );

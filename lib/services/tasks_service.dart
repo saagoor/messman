@@ -43,6 +43,14 @@ class TasksService with ChangeNotifier {
     notifyListeners();
   }
 
+  void reset({reload = false}) {
+    this._items = [];
+    this.isLoaded = false;
+    if (reload) {
+      notifyListeners();
+    }
+  }
+
   List<Task> usersTasks({int userId}) {
     return items.where((element) => element.memberId == userId).toList();
   }

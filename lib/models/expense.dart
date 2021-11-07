@@ -37,7 +37,7 @@ class Expense extends Transaction {
   Map<String, dynamic> toJson() => _$ExpenseToJson(this);
 
   void delete(BuildContext context) {
-    showDeleteDialog(
+    showConfirmationDialog(
       context: context,
       deleteMethod: () =>
           Provider.of<ExpensesService>(context, listen: false).delete(super.id),
